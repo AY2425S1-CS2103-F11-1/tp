@@ -1,7 +1,6 @@
 package seedu.address.logic.commands;
 
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.util.List;
@@ -32,16 +31,14 @@ public class RemarkCommand extends Command {
 
 
     public static final String MESSAGE_ARGUMENTS = "Index: %1$d, Remark: %2$s";
-
     private final Index index;
     private final Remark remark;
-
     /**
      * @param index of the person in the filtered person list to edit the remark
      * @param remark of the person to be updated to
      */
     public RemarkCommand(Index index, Remark remark) {
-        requireAllNonNull(index,remark);
+        requireAllNonNull(index, remark);
 
         this.index = index;
         this.remark = remark;
