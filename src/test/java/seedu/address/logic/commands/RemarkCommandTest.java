@@ -84,7 +84,6 @@ public class RemarkCommandTest {
         RemarkCommand remarkCommand = new RemarkCommand(outOfBoundIndex, new Remark(VALID_REMARK_BOB));
         assertCommandFailure(remarkCommand, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
     }
-    
     @Test
     public void equals() {
         final RemarkCommand standardCommand = new RemarkCommand(INDEX_FIRST_PERSON,
