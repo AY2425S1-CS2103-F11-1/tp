@@ -3,11 +3,11 @@
   "pages": [
     {
       "src": "AboutUs.md",
-      "title": "About Us",
       "headings": {
         "about-us": "About Us",
         "project-team": "Project team",
-        "jian-yi": "Jian Yi"
+        "jian-yi": "Jian Yi",
+        "emmanuel-er": "Emmanuel Er"
       },
       "headingKeywords": {}
     },
