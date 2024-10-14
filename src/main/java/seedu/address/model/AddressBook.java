@@ -127,6 +127,10 @@ public class AddressBook implements ReadOnlyAddressBook {
         assignments.add(a);
     }
 
+    public void editAssignmentStatus(Assignment a) {
+        assignments.setSubmitted(a);
+    }
+
     /**
      * Replaces the given Assignment {@code assignment} in the list with {@code editedAssignment}.
      * {@code assignment} must exist in the address book.

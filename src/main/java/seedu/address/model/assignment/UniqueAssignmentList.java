@@ -145,5 +145,12 @@ public class UniqueAssignmentList implements Iterable<Assignment> {
         }
         return true;
     }
+
+    public void setSubmitted(Assignment assignment) {
+        int index = internalList.indexOf(assignment);
+        assignment.setHasSubmitted();
+        internalList.set(index, assignment);
+        // what if assignment does not exist in the list?
+    }
 }
 

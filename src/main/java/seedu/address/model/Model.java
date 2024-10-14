@@ -94,4 +94,6 @@ public interface Model {
      * Returns true if a assignment with the same identity as {@code assignment} exists in the app.
      */
     boolean hasAssignment(Assignment assignment);
+
+    void editAssignmentStatus(Assignment assignment);
 }

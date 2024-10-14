@@ -121,6 +121,10 @@ public class ModelManager implements Model {
         //will probably need to make some changes to keep track of duplicate assignments
     }
 
+    public void editAssignmentStatus(Assignment assignment) {
+        addressBook.editAssignmentStatus(assignment);
+    }
+
     //=========== Filtered Student List Accessors =============================================================
 
     /**
