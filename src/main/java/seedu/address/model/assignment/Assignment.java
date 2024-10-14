@@ -115,4 +115,8 @@ public class Assignment {
         return this.score;
     }
 
+    public void setHasSubmitted() {
+        this.hasSubmitted = true;
+    }
+
 }
