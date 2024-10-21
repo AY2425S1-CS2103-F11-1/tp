@@ -12,8 +12,16 @@
 --------------------------------------------------------------------------------------------------------------------
 
 ## **Acknowledgements**
+The following table acknowledges numerous 3rd party libraries, API and documentation that were used in the development of TAchy.
 
-_{ list here sources of all reused/adapted ideas, code, documentation, and third-party libraries -- include links to the original source as well }_
+| Name                                                                              | Description                                                                                                              |
+|-----------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| [AddressBook-Level 3 (AB-3)](https://se-education.org/addressbook-level3/)        | TAchy is a brownfield project adapted from AB-3, which was created by the [SE-EDU initiative](https://se-education.org). |
+| [Jackson](https://github.com/FasterXML/jackson)                                   | Used for parsing JSON files.                                                                                             |
+| [Gradle](https://gradle.org/)                                                     | Used for build automation                                                                                                |
+| [JavaFX](https://openjfx.io)                                                      | Used in rendering the GUI.                                                                                               |
+| [JUnit5](https://junit.org/junit5/)                                               | Used for testing the codebase.                                                                                           |
+| [Oracle Java Docs](https://docs.oracle.com/en/java/javase/11/docs/api/index.html) | Used for understanding the default Java API                                                                              |
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -50,7 +58,7 @@ The bulk of the app's work is done by the following four components:
 
 **How the architecture components interact with each other**
 
-The *Sequence Diagram* below shows how the components interact with each other for the scenario where the user issues the command `delete 1`.
+The *Sequence Diagram* below shows how the components interact with each other for the scenario where the user issues the command `delete_student 1`.
 
 <puml src="diagrams/ArchitectureSequenceDiagram.puml" width="574" />
 
@@ -71,7 +79,7 @@ The **API** of this component is specified in [`Ui.java`](https://github.com/se-
 
 <puml src="diagrams/UiClassDiagram.puml" alt="Structure of the UI Component"/>
 
-The UI consists of a `MainWindow` that is made up of parts e.g.`CommandBox`, `ResultDisplay`, `PersonListPanel`, `StatusBarFooter` etc. All these, including the `MainWindow`, inherit from the abstract `UiPart` class which captures the commonalities between classes that represent parts of the visible GUI.
+The UI consists of a `MainWindow` that is made up of parts e.g.`CommandBox`, `ResultDisplay`, `StudentListPanel`, `StatusBarFooter` etc. All these, including the `MainWindow`, inherit from the abstract `UiPart` class which captures the commonalities between classes that represent parts of the visible GUI.
 
 The `UI` component uses the JavaFx UI framework. The layout of these UI parts are defined in matching `.fxml` files that are in the `src/main/resources/view` folder. For example, the layout of the [`MainWindow`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/MainWindow.java) is specified in [`MainWindow.fxml`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/resources/view/MainWindow.fxml)
 
@@ -80,7 +88,7 @@ The `UI` component,
 * executes user commands using the `Logic` component.
 * listens for changes to `Model` data so that the UI can be updated with the modified data.
 * keeps a reference to the `Logic` component, because the `UI` relies on the `Logic` to execute commands.
-* depends on some classes in the `Model` component, as it displays `Person` object residing in the `Model`.
+* depends on some classes in the `Model` component, as it displays `Student` object residing in the `Model`.
 
 ### Logic component
 
@@ -90,9 +98,9 @@ Here's a (partial) class diagram of the `Logic` component:
 
 <puml src="diagrams/LogicClassDiagram.puml" width="550"/>
 
-The sequence diagram below illustrates the interactions within the `Logic` component, taking `execute("delete 1")` API call as an example.
+The sequence diagram below illustrates the interactions within the `Logic` component, taking `execute("delete_student 1")` API call as an example.
 
-<puml src="diagrams/DeleteSequenceDiagram.puml" alt="Interactions Inside the Logic Component for the `delete 1` Command" />
+<puml src="diagrams/DeleteSequenceDiagram.puml" alt="Interactions Inside the Logic Component for the `delete_student 1` Command" />
 
 <box type="info" seamless>
 
@@ -102,10 +110,10 @@ The sequence diagram below illustrates the interactions within the `Logic` compo
 How the `Logic` component works:
 
 1. When `Logic` is called upon to execute a command, it is passed to an `AddressBookParser` object which in turn creates a parser that matches the command (e.g., `DeleteCommandParser`) and uses it to parse the command.
-1. This results in a `Command` object (more precisely, an object of one of its subclasses e.g., `DeleteCommand`) which is executed by the `LogicManager`.
-1. The command can communicate with the `Model` when it is executed (e.g. to delete a student).<br>
+2. This results in a `Command` object (more precisely, an object of one of its subclasses e.g., `DeleteCommand`) which is executed by the `LogicManager`.
+3. The command can communicate with the `Model` when it is executed (e.g. to delete a student).<br>
    Note that although this is shown as a single step in the diagram above (for simplicity), in the code it can take several interactions (between the command object and the `Model`) to achieve.
-1. The result of the command execution is encapsulated as a `CommandResult` object which is returned back from `Logic`.
+4. The result of the command execution is encapsulated as a `CommandResult` object which is returned back from `Logic`.
 
 Here are the other classes in `Logic` (omitted from the class diagram above) that are used for parsing a user command:
 
@@ -123,14 +131,14 @@ How the parsing works:
 
 The `Model` component,
 
-* stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
-* stores the currently 'selected' `Person` objects (e.g., results of a search query) as a separate _filtered_ list which is exposed to outsiders as an unmodifiable `ObservableList<Person>` that can be 'observed' e.g. the UI can be bound to this list so that the UI automatically updates when the data in the list change.
+* stores the address book data i.e., all `Student` objects (which are contained in a `UniqueStudentList` object).
+* stores the currently 'selected' `Student` objects (e.g., results of a search query) as a separate _filtered_ list which is exposed to outsiders as an unmodifiable `ObservableList<Student>` that can be 'observed' e.g. the UI can be bound to this list so that the UI automatically updates when the data in the list change.
 * stores a `UserPref` object that represents the user’s preferences. This is exposed to the outside as a `ReadOnlyUserPref` objects.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
 <box type="info" seamless>
 
-**Note:** An alternative (arguably, a more OOP) model is given below. It has a `Tag` list in the `AddressBook`, which `Person` references. This allows `AddressBook` to only require one `Tag` object per unique tag, instead of each `Person` needing their own `Tag` objects.<br>
+**Note:** An alternative (arguably, a more OOP) model is given below. It has a `Tag` list in the `AddressBook`, which `Student` references. This allows `AddressBook` to only require one `Tag` object per unique tag, instead of each `Student` needing their own `Tag` objects.<br>
 
 <puml src="diagrams/BetterModelClassDiagram.puml" width="450" />
 
@@ -156,7 +164,49 @@ Classes used by multiple components are in the `seedu.address.commons` package.
 
 ## **Implementation**
 
-This section describes some noteworthy details on how certain features are implemented.
+
+### Introduction
+This section of the developer Guide covers how the features are implemented and executed.
+
+### Features Overview
+Listed below are the implemented features, and a brief description of what they do.
+* **Adding a new Assignment**: Adds a new Assignment for a particular student
+* **Grading an existing Assignment**: Grades an existing assignment belonging to an existing student
+* **Deleting an existing Assignment**: Deletes an existing assignment belonging to an existing student
+* **Viewing a student's details**: Displays students details along with the assignments associated with the student
+
+## Adding a new Assignment
+This `add_assignment` command is a feature that  allows the user to create a new assignment, based on the student's index. The assignment must have an alphanumeric `Name`, and a valid `Max Score`.
+
+#### Design Considerations:
+Previously, AB3 had a single command word for the `add` commands. As TAchy is a brownfield project, additional objects are now allowed to be instantiated via the `add` commmand.
+In particular, TAchy has 2 features that "add" items to the app. Firstly, there is an `add_student` feature, and also an `add_assignment` feature.
+
+**Aspect: How to distinguish between the different 'add' commands:**
+* Alternative 1 (current choice): Distinguish command word, and thus allow only 1 type of object to be created at a time.
+  * Pros: Easy to implement, and less prone to Users making errors in command format
+  * Cons: User will only be able to add either students or assignments, one at a time
+
+* Alternative 2: Allow multiple objects to be created concurrently.
+  * Pros: Allows adept users to create new objects in the app more quickly
+  * Cons: Difficult to implement, and users are prone to making more mistakes in supplying the valid parameters used.
+
+
+#### Implementation
+* LogicManager executes the command "add_assignment".
+* LogicManager parses the command via AddressBookParser.
+* AddressBookParser creates and delegates parsing to AddAssignmentCommandParser.
+* AddAssignmentCommandParser creates an AddAssignmentCommand object.
+* AddAssignmentCommand is returned to AddAssignmentCommandParser and back to AddressBookParser.
+* LogicManager then executes AddAssignmentCommand, which interacts with the Model.
+* AddAssignmentCommand creates a CommandResult object.
+* CommandResult is returned to AddAssignmentCommand, which returns the result to LogicManager.
+* The sequence concludes with the return to the caller from LogicManager.
+* This describes the flow of command execution, parsing, and interaction with the model.
+
+#### Example invocation sequence for AddAssignmentCommand
+<puml src="diagrams/AddAssignmentSequenceDiagram.puml" alt="Interactions Inside the Logic Component for the `add_assignment` Command" />
+
 
 ### \[Proposed\] Undo/redo feature
 
