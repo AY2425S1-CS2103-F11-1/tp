@@ -57,8 +57,8 @@ class JsonAdaptedAssignment {
         if (!AssignmentName.isValidName(assignmentName)) { // Assuming you have this validation
             throw new IllegalValueException("Invalid Assignment Name");
         }
-        if (!Assignment.isValidScore(maxScore)) {
-            throw new IllegalValueException(Assignment.MESSAGE_CONSTRAINTS);
+        if (!Assignment.isValidMaxScore(maxScore)) {
+            throw new IllegalValueException(Assignment.MAX_SCORE_MESSAGE_CONSTRAINTS);
         }
 
         final AssignmentName modelAssignmentName = new AssignmentName(assignmentName);

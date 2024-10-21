@@ -30,24 +30,24 @@ public class AddAssignmentCommandParser implements Parser<AddAssignmentCommand> 
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddAssignmentCommand.MESSAGE_USAGE));
         }
 
-        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_STUDENT_INDEX, PREFIX_ASSIGNMENT_NAME,
-                PREFIX_ASSIGNMENT_MAX_SCORE);
-
         Index studentIndex;
         AssignmentName assignmentName;
         int maxScore;
 
+        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_STUDENT_INDEX, PREFIX_ASSIGNMENT_NAME,
+                PREFIX_ASSIGNMENT_MAX_SCORE);
         try {
             studentIndex = ParserUtil.parseIndex(argMultimap.getValue(PREFIX_STUDENT_INDEX).get());
             assignmentName = ParserUtil.parseAssignmentName(argMultimap.getValue(PREFIX_ASSIGNMENT_NAME).get());
             maxScore = ParserUtil.parseMaxScore(argMultimap.getValue(PREFIX_ASSIGNMENT_MAX_SCORE).get());
         } catch (ParseException pe) {
-            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
-                    AddAssignmentCommand.MESSAGE_USAGE), pe);
+            throw new ParseException(
+                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddAssignmentCommand.MESSAGE_USAGE), pe);
         }
 
         AddAssignmentCommand.AssignmentDescriptor assignmentDescriptor =
                 new AddAssignmentCommand.AssignmentDescriptor(maxScore, assignmentName);
+
         return new AddAssignmentCommand(studentIndex, assignmentDescriptor);
     }
 }
