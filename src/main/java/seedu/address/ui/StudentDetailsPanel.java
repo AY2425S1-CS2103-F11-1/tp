@@ -41,6 +41,8 @@ public class StudentDetailsPanel extends UiPart<Region> {
     private FlowPane detailsTags;
     @FXML
     private FlowPane assignments;
+    @FXML
+    private Label remark;
 
     /**
      * Creates a {@code StudentCode} with the given {@code Student} and index to display.
@@ -52,6 +54,7 @@ public class StudentDetailsPanel extends UiPart<Region> {
         name.setText(student.getName().fullName);
         phone.setText(student.getPhone().value);
         email.setText(student.getEmail().value);
+        remark.setText(student.getRemark());
         student.getTags().stream()
                 .sorted(Comparator.comparing(tag -> tag.tagName))
                 .forEach(tag -> detailsTags.getChildren().add(new Label(tag.tagName)));

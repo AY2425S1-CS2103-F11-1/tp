@@ -74,6 +74,13 @@
                             </padding>
                         </FlowPane>
                     </HBox>
+                    <HBox spacing="5" alignment="CENTER_LEFT">
+                        <padding>
+                            <Insets left="8" bottom="5"/>
+                        </padding>
+                        <Label text="Remark: " styleClass="details_field_headers" />
+                        <Label fx:id="remark" styleClass="details_small_label" text="\$remark" />
+                    </HBox>
                 </VBox>
             </GridPane>
         </content>

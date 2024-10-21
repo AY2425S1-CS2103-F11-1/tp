@@ -26,10 +26,12 @@ public class TypicalStudents {
             .withEmail("alice@example.com")
             .withPhone("94351253")
             .withTags("friends")
+            .withRemark("Weak at Math")
             .build();
     public static final Student BENSON = new StudentBuilder().withName("Benson Meier")
             .withEmail("johnd@example.com").withPhone("98765432")
             .withTags("owesMoney", "friends")
+            .withRemark("Weak at English")
             .build();
     public static final Student CARL = new StudentBuilder().withName("Carl Kurz").withPhone("95352563")
             .withEmail("heinz@example.com")

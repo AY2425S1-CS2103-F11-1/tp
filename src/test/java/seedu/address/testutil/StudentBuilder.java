@@ -28,6 +28,7 @@ public class StudentBuilder {
     private Email email;
     private Set<Tag> tags;
     private List<Assignment> assignments;
+    private String remark;
 
     /**
      * Creates a {@code StudentBuilder} with the default details.
@@ -38,6 +39,7 @@ public class StudentBuilder {
         email = new Email(DEFAULT_EMAIL);
         assignments = new ArrayList<>();
         tags = new HashSet<>();
+        remark = "";
     }
 
     /**
@@ -49,6 +51,7 @@ public class StudentBuilder {
         email = studentToCopy.getEmail();
         tags = new HashSet<>(studentToCopy.getTags());
         assignments = studentToCopy.getAssignmentList();
+        remark = studentToCopy.getRemark();
     }
 
     /**
@@ -91,12 +94,20 @@ public class StudentBuilder {
         return this;
     }
 
+    /**
+     * Sets the {@code remark} of the {@code Student} that we are building.
+     */
+    public StudentBuilder withRemark(String remark) {
+        this.remark = remark;
+        return this;
+    }
+
     public Student build() {
-        return new Student(name, phone, email, tags);
+        return new Student(name, phone, email, tags, remark);
     }
 
     public Student buildWithAssignment() {
-        return new Student(name, phone, email, tags, assignments);
+        return new Student(name, phone, email, tags, assignments, remark);
     }
 
 }

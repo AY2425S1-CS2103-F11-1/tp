@@ -19,6 +19,7 @@ import seedu.address.model.tag.Tag;
  * Guarantees: details are present and not null, field values are validated, immutable.
  */
 public class Student {
+    private static final String EMPTY_REMARK = "";
 
     // Identity fields
     private final Name name;
@@ -27,11 +28,12 @@ public class Student {
 
     // Data fields
     private final Set<Tag> tags = new HashSet<>();
+    private final String remark;
     //AssignmentList initially null
     private List<Assignment> assignmentList = new ArrayList<Assignment>();
 
     /**
-     * Every field except assignmentList must be present and not null.
+     * Every field except assignmentList must be present and not null. Remark is empty
      */
     public Student(Name name, Phone phone, Email email, Set<Tag> tags) {
         requireAllNonNull(name, phone, email, tags);
@@ -39,19 +41,46 @@ public class Student {
         this.phone = phone;
         this.email = email;
         this.tags.addAll(tags);
+        this.remark = EMPTY_REMARK;
     }
+
+    /**
+     * Every field except assignmentList must be present and not null.
+     */
+    public Student(Name name, Phone phone, Email email, Set<Tag> tags, String remark) {
+        requireAllNonNull(name, phone, email, tags, remark);
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.tags.addAll(tags);
+        this.remark = remark;
+    }
+
     /**
      * Creates a Student object with an AssignmentList
      */
-    public Student(Name name, Phone phone, Email email, Set<Tag> tags, List<Assignment> assignmentList) {
-        requireAllNonNull(name, phone, email, tags);
+    public Student(Name name, Phone phone, Email email, Set<Tag> tags, List<Assignment> assignmentList, String remark) {
+        requireAllNonNull(name, phone, email, tags, remark);
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.tags.addAll(tags);
         this.assignmentList = assignmentList;
+        this.remark = remark;
     }
-
+    /**
+     * Copy an existing student object and changing the remark attribute
+     */
+    public Student(Student studentToCopy, String remark) {
+        requireAllNonNull(studentToCopy.getName(), studentToCopy.getPhone(), studentToCopy.getEmail(),
+                studentToCopy.getTags(), remark);
+        this.name = studentToCopy.getName();
+        this.phone = studentToCopy.getPhone();
+        this.email = studentToCopy.getEmail();
+        this.tags.addAll(studentToCopy.getTags());
+        this.assignmentList = studentToCopy.getAssignmentList();
+        this.remark = remark;
+    }
 
     public Name getName() {
         return name;
@@ -67,7 +96,6 @@ public class Student {
     public List<Assignment> getAssignmentList() {
         return assignmentList;
     }
-
     /**
      * Returns an immutable tag set, which throws {@code UnsupportedOperationException}
      * if modification is attempted.
@@ -76,6 +104,9 @@ public class Student {
         return Collections.unmodifiableSet(tags);
     }
 
+    public String getRemark() {
+        return remark;
+    }
     /**
      * Returns true if both students have the same name.
      * This defines a weaker notion of equality between two students.
@@ -88,7 +119,6 @@ public class Student {
         return otherStudent != null
                 && otherStudent.getName().equals(getName());
     }
-
     /**
      * Returns true if both students have the same identity and data fields.
      * This defines a stronger notion of equality between two students.
@@ -109,7 +139,8 @@ public class Student {
                 && phone.equals(otherStudent.phone)
                 && email.equals(otherStudent.email)
                 && tags.equals(otherStudent.tags)
-                && assignmentList.equals(otherStudent.assignmentList);
+                && assignmentList.equals(otherStudent.assignmentList)
+                && remark.equals(otherStudent.remark);
     }
 
     @Override
@@ -126,6 +157,7 @@ public class Student {
                 .add("email", email)
                 .add("tags", tags)
                 .add("assignments", assignmentList)
+                .add("remark", remark)
                 .toString();
     }
 
@@ -150,7 +182,7 @@ public class Student {
         Objects.requireNonNull(assignmentToAdd);
         List<Assignment> newAssignmentlist = new ArrayList<Assignment>(assignmentList);
         newAssignmentlist.add(assignmentToAdd);
-        return new Student(this.name, this.phone, this.email, this.tags, newAssignmentlist);
+        return new Student(this.name, this.phone, this.email, this.tags, newAssignmentlist, this.remark);
     }
     /**
      * Deletes the Assignment at {@code index} in the student's assignmentList
@@ -161,4 +193,5 @@ public class Student {
         }
         assignmentList.remove(index - 1);
     }
+
 }
