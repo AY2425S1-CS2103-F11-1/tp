@@ -53,6 +53,7 @@
         "introduction": "Introduction",
         "features-overview": "Features Overview",
         "adding-a-new-assignment": "Adding a new Assignment",
+        "viewing-a-student-s-details": "Viewing a student's details",
         "proposed-undo-redo-feature": "[Proposed] Undo/redo feature",
         "proposed-data-archiving": "[Proposed] Data archiving",
         "documentation-logging-testing-configuration-dev-ops": "Documentation, logging, testing, configuration, dev-ops",

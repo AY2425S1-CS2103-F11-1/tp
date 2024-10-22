@@ -1,0 +1,68 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+box Logic LOGIC_COLOR_T1
+participant ":LogicManager" as LogicManager LOGIC_COLOR
+participant ":AddressBookParser" as AddressBookParser LOGIC_COLOR
+participant ":ViewStudentCommandParser" as ViewStudentCommandParser LOGIC_COLOR
+participant "v:ViewStudentCommand" as ViewStudentCommand LOGIC_COLOR
+participant "r:CommandResult" as CommandResult LOGIC_COLOR
+end box
+
+box Model MODEL_COLOR_T1
+participant "m:Model" as Model MODEL_COLOR
+end box
+
+[-> LogicManager : execute("view_student")
+activate LogicManager
+
+LogicManager -> AddressBookParser : parseCommand("view_student")
+activate AddressBookParser
+
+create ViewStudentCommandParser
+AddressBookParser -> ViewStudentCommandParser
+activate ViewStudentCommandParser
+
+ViewStudentCommandParser --> AddressBookParser
+deactivate ViewStudentCommandParser
+
+AddressBookParser -> ViewStudentCommandParser : parse()
+activate ViewStudentCommandParser
+
+
+create ViewStudentCommand
+ViewStudentCommandParser -> ViewStudentCommand : ViewStudentCommand()
+activate ViewStudentCommand
+
+AddAssignmentCommand --> ViewStudentCommandParser :
+deactivate ViewStudentCommand
+
+ViewStudentCommandParser --> AddressBookParser : d
+deactivate ViewStudentCommandParser
+'Hidden arrow to destroy the marker below the end of the activation bar
+ViewStudentCommandParser -[hidden]-> AddressBookParser
+destroy ViewStudentCommandParser
+
+AddressBookParser --> LogicManager : d
+deactivate AddressBookParser
+
+LogicManager -> ViewStudentCommand : execute(m)
+activate ViewStudentCommand
+
+ViewStudentCommand -> Model :
+Model --> ViewStudentCommand
+
+create CommandResult
+ViewStudentCommand -> CommandResult
+activate CommandResult
+
+CommandResult --> ViewStudentCommand
+deactivate CommandResult
+
+ViewStudentCommand --> LogicManager : r
+deactivate AddAssignmentCommand
+
+[<-- LogicManager
+deactivate LogicManager
+@enduml
