@@ -30,12 +30,11 @@ deactivate ViewStudentCommandParser
 AddressBookParser -> ViewStudentCommandParser : parse()
 activate ViewStudentCommandParser
 
-
 create ViewStudentCommand
 ViewStudentCommandParser -> ViewStudentCommand : ViewStudentCommand()
 activate ViewStudentCommand
 
-AddAssignmentCommand --> ViewStudentCommandParser :
+ViewStudentCommand --> ViewStudentCommandParser :
 deactivate ViewStudentCommand
 
 ViewStudentCommandParser --> AddressBookParser : d
