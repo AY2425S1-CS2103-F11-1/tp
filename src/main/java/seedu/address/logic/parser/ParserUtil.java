@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.StringUtil;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.assignment.Assignment;
 import seedu.address.model.assignment.AssignmentName;
 import seedu.address.model.student.Email;
 import seedu.address.model.student.Name;
@@ -118,13 +119,10 @@ public class ParserUtil {
     public static int parseMaxScore(String maxScore) throws ParseException {
         requireNonNull(maxScore);
         String trimmedMaxScore = maxScore.trim();
-        int parsedScore;
-        try {
-            parsedScore = Integer.parseInt(trimmedMaxScore);
-        } catch (NumberFormatException e) {
-            throw new ParseException("The score must be an integer!");
+        if (!StringUtil.isUnsignedInteger(trimmedMaxScore)) {
+            throw new ParseException(Assignment.MAX_SCORE_MESSAGE_CONSTRAINTS);
         }
-        return parsedScore;
+        return Integer.parseInt(trimmedMaxScore);
     }
     /**
      * Parses a {@code String score} into a {@code int}.
@@ -135,13 +133,10 @@ public class ParserUtil {
     public static int parseScore(String score) throws ParseException {
         requireNonNull(score);
         String trimmedScore = score.trim();
-        int parsedScore;
-        try {
-            parsedScore = Integer.parseInt(trimmedScore);
-        } catch (NumberFormatException e) {
+        if (!StringUtil.isUnsignedInteger(trimmedScore)) {
             throw new ParseException("The score must be an integer!");
         }
-        return parsedScore;
+        return Integer.parseInt(trimmedScore);
     }
     /**
      * Parses a {@code String studentIndex} into a {@code int}.
@@ -149,16 +144,12 @@ public class ParserUtil {
      *
      * @throws ParseException if the given {@code studentIndex} is invalid.
      */
-    public static int parseStudentIndex(String studentIndex) throws ParseException {
-        requireNonNull(studentIndex);
-        String trimmedStudentIndex = studentIndex.trim();
-        int parsedStudentIndex;
-        try {
-            parsedStudentIndex = Integer.parseInt(trimmedStudentIndex);
-        } catch (NumberFormatException e) {
-            throw new ParseException("The score must be an integer!");
+    public static int parseStudentIndex(String oneBasedIndex) throws ParseException {
+        String trimmedIndex = oneBasedIndex.trim();
+        if (!StringUtil.isNonZeroUnsignedInteger(trimmedIndex)) {
+            throw new ParseException(MESSAGE_INVALID_INDEX);
         }
-        return parsedStudentIndex;
+        return Integer.parseInt(trimmedIndex);
     }
     /**
      * Parses {@code Collection<String> tags} into a {@code Set<Tag>}.

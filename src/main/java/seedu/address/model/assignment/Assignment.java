@@ -15,8 +15,11 @@ import seedu.address.model.student.Student;
  */
 public class Assignment {
 
-    public static final String MESSAGE_CONSTRAINTS =
+    public static final String MAX_SCORE_MESSAGE_CONSTRAINTS =
             "The maximum score should be greater than or equal to the minimum score of 0";
+    public static final String SCORE_MESSAGE_CONSTRAINTS =
+            "The score should be between (inclusive) of the minimum and maximum score";
+
     private static final int MIN_SCORE = 0;
 
     // Identity fields
@@ -36,14 +39,14 @@ public class Assignment {
         requireNonNull(name);
         this.student = student;
         this.assignmentName = name;
-        checkArgument(isValidScore(maxScore), MESSAGE_CONSTRAINTS);
+        checkArgument(isValidMaxScore(maxScore), MAX_SCORE_MESSAGE_CONSTRAINTS);
         this.maxScore = maxScore;
     }
 
     /**
      * Returns true if a given maxScore is a valid score.
      */
-    public static boolean isValidScore(int test) {
+    public static boolean isValidMaxScore(int test) {
         return test >= MIN_SCORE;
     }
 
