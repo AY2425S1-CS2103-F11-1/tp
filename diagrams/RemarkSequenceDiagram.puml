@@ -50,10 +50,6 @@ activate RemarkCommand
 RemarkCommand -> Model :
 Model --> RemarkCommand
 
-Model -> Student : updateRemark(remark)
-deactivate Student
-deactivate Model
-
 create CommandResult
 RemarkCommand -> CommandResult
 activate CommandResult

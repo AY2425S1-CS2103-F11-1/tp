@@ -61,7 +61,7 @@ CommandResult --> ViewStudentCommand
 deactivate CommandResult
 
 ViewStudentCommand --> LogicManager : r
-deactivate AddAssignmentCommand
+deactivate ViewStudentCommand
 
 [<-- LogicManager
 deactivate LogicManager
