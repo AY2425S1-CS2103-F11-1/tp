@@ -20,25 +20,580 @@
 Note that although this is shown as a single step in the diagram above (for simplicity), in the code it can take several interactions (between the command object and the <code class="hljs inline no-lang">Model</code>) to achieve.</li> <li>The result of the command execution is encapsulated as a <code class="hljs inline no-lang">CommandResult</code> object which is returned back from <code class="hljs inline no-lang">Logic</code>.</li></ol> <p>Here are the other classes in <code class="hljs inline no-lang">Logic</code> (omitted from the class diagram above) that are used for parsing a user command:</p> <span class="image-wrapper"><img src="/tp/diagrams/ParserClasses.png" width="600" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span> <p>How the parsing works:</p> <ul><li>When called upon to parse a user command, the <code class="hljs inline no-lang">AddressBookParser</code> class creates an <code class="hljs inline no-lang">XYZCommandParser</code> (<code class="hljs inline no-lang">XYZ</code> is a placeholder for the specific command name e.g., <code class="hljs inline no-lang">AddCommandParser</code>) which uses the other classes shown above to parse the user command and create a <code class="hljs inline no-lang">XYZCommand</code> object (e.g., <code class="hljs inline no-lang">AddCommand</code>) which the <code class="hljs inline no-lang">AddressBookParser</code> returns back as a <code class="hljs inline no-lang">Command</code> object.</li> <li>All <code class="hljs inline no-lang">XYZCommandParser</code> classes (e.g., <code class="hljs inline no-lang">AddCommandParser</code>, <code class="hljs inline no-lang">DeleteCommandParser</code>, ...) inherit from the <code class="hljs inline no-lang">Parser</code> interface so that they can be treated similarly where possible e.g, during testing.</li></ul> <h3 id="model-component">Model component<a href="#model-component" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h3> <p><strong>API</strong> : <a href="https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/model/Model.java"><code class="hljs inline no-lang">Model.java</code></a></p> <span class="image-wrapper"><img src="/tp/diagrams/ModelClassDiagram.png" width="450" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span> <p>The <code class="hljs inline no-lang">Model</code> component,</p> <ul><li>stores the address book data i.e., all <code class="hljs inline no-lang">Student</code> objects (which are contained in a <code class="hljs inline no-lang">UniqueStudentList</code> object).</li> <li>stores the currently 'selected' <code class="hljs inline no-lang">Student</code> objects (e.g., results of a search query) as a separate <em>filtered</em> list which is exposed to outsiders as an unmodifiable <code class="hljs inline no-lang">ObservableList&lt;Student&gt;</code> that can be 'observed' e.g. the UI can be bound to this list so that the UI automatically updates when the data in the list change.</li> <li>stores a <code class="hljs inline no-lang">UserPref</code> object that represents the user’s preferences. This is exposed to the outside as a <code class="hljs inline no-lang">ReadOnlyUserPref</code> objects.</li> <li>does not depend on any of the other three components (as the <code class="hljs inline no-lang">Model</code> represents data entities of the domain, they should make sense on their own without depending on other components)</li></ul> <div class="alert box-container seamless" data-v-474166ec><!----> <div class="header-and-body" data-v-474166ec><!----> <div class="box-body-wrapper" data-v-474166ec><div class="icon-wrapper  text-info" data-v-474166ec><i class="fas fa-info" data-v-474166ec></i></div> <div aria-hidden="true" class="vertical-divider alert-info" data-v-474166ec></div> <div class="contents" data-v-474166ec><p data-v-474166ec><strong data-v-474166ec>Note:</strong> An alternative (arguably, a more OOP) model is given below. It has a <code class="hljs inline no-lang" data-v-474166ec>Tag</code> list in the <code class="hljs inline no-lang" data-v-474166ec>AddressBook</code>, which <code class="hljs inline no-lang" data-v-474166ec>Student</code> references. This allows <code class="hljs inline no-lang" data-v-474166ec>AddressBook</code> to only require one <code class="hljs inline no-lang" data-v-474166ec>Tag</code> object per unique tag, instead of each <code class="hljs inline no-lang" data-v-474166ec>Student</code> needing their own <code class="hljs inline no-lang" data-v-474166ec>Tag</code> objects.<br data-v-474166ec></p> <span class="image-wrapper"><img src="/tp/diagrams/BetterModelClassDiagram.png" width="450" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span></div> <!----></div></div></div> <h3 id="storage-component">Storage component<a href="#storage-component" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h3> <p><strong>API</strong> : <a href="https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/storage/Storage.java"><code class="hljs inline no-lang">Storage.java</code></a></p> <span class="image-wrapper"><img src="/tp/diagrams/StorageClassDiagram.png" width="550" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span> <p>The <code class="hljs inline no-lang">Storage</code> component,</p> <ul><li>can save both address book data and user preference data in JSON format, and read them back into corresponding objects.</li> <li>inherits from both <code class="hljs inline no-lang">AddressBookStorage</code> and <code class="hljs inline no-lang">UserPrefStorage</code>, which means it can be treated as either one (if only the functionality of only one is needed).</li> <li>depends on some classes in the <code class="hljs inline no-lang">Model</code> component (because the <code class="hljs inline no-lang">Storage</code> component's job is to save/retrieve objects that belong to the <code class="hljs inline no-lang">Model</code>)</li></ul> <h3 id="common-classes">Common classes<a href="#common-classes" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h3> <p>Classes used by multiple components are in the <code class="hljs inline no-lang">seedu.address.commons</code> package.</p> <hr> <h2 id="implementation"><strong>Implementation</strong><a href="#implementation" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h2> <h3 id="introduction">Introduction<a href="#introduction" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h3> <p>This section of the developer Guide covers how the features are implemented and executed.</p> <h3 id="features-overview">Features Overview<a href="#features-overview" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h3> <p>Listed below are the implemented features, and a brief description of what they do.</p> <ul><li><strong>Adding a new Assignment</strong>: Adds a new Assignment for a particular student</li> <li><strong>Grading an existing Assignment</strong>: Grades an existing assignment belonging to an existing student</li> <li><strong>Deleting an existing Assignment</strong>: Deletes an existing assignment belonging to an existing student</li> <li><strong>Viewing a student's details</strong>: Displays students details along with the assignments associated with the student</li></ul> <h2 id="adding-a-new-assignment">Adding a new Assignment<a href="#adding-a-new-assignment" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h2> <p>This <code class="hljs inline no-lang">add_assignment</code> command is a feature that  allows the user to create a new assignment, based on the student's index. The assignment must have an alphanumeric <code class="hljs inline no-lang">Name</code>, and a valid <code class="hljs inline no-lang">Max Score</code>.</p> <h4 id="design-considerations">Design Considerations:<a href="#design-considerations" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h4> <p>Previously, AB3 had a single command word for the <code class="hljs inline no-lang">add</code> commands. As TAchy is a brownfield project, additional objects are now allowed to be instantiated via the <code class="hljs inline no-lang">add</code> commmand.
 In particular, TAchy has 2 features that &quot;add&quot; items to the app. Firstly, there is an <code class="hljs inline no-lang">add_student</code> feature, and also an <code class="hljs inline no-lang">add_assignment</code> feature.</p> <p><strong>Aspect: How to distinguish between the different 'add' commands:</strong></p> <ul><li><p>Alternative 1 (current choice): Distinguish command word, and thus allow only 1 type of object to be created at a time.</p> <ul><li>Pros: Easy to implement, and less prone to Users making errors in command format</li> <li>Cons: User will only be able to add either students or assignments, one at a time</li></ul></li> <li><p>Alternative 2: Allow multiple objects to be created concurrently.</p> <ul><li>Pros: Allows adept users to create new objects in the app more quickly</li> <li>Cons: Difficult to implement, and users are prone to making more mistakes in supplying the valid parameters used.</li></ul></li></ul> <h4 id="implementation-2">Implementation<a href="#implementation-2" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h4> <ul><li>LogicManager executes the command &quot;add_assignment&quot;.</li> <li>LogicManager parses the command via AddressBookParser.</li> <li>AddressBookParser creates and delegates parsing to AddAssignmentCommandParser.</li> <li>AddAssignmentCommandParser creates an AddAssignmentCommand object.</li> <li>AddAssignmentCommand is returned to AddAssignmentCommandParser and back to AddressBookParser.</li> <li>LogicManager then executes AddAssignmentCommand, which interacts with the Model.</li> <li>AddAssignmentCommand creates a CommandResult object.</li> <li>CommandResult is returned to AddAssignmentCommand, which returns the result to LogicManager.</li> <li>The sequence concludes with the return to the caller from LogicManager.</li> <li>This describes the flow of command execution, parsing, and interaction with the model.</li></ul> <h4 id="example-invocation-sequence-for-addassignmentcommand">Example invocation sequence for AddAssignmentCommand<a href="#example-invocation-sequence-for-addassignmentcommand" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h4> <span class="image-wrapper"><img src="/tp/diagrams/add-assignment/AddAssignmentSequenceDiagram.png" alt="Interactions inside the Logic Component for the `add_assignment` Command" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span> <h4 id="example-activity-diagram-for-addassignmentcommand">Example activity diagram for AddAssignmentCommand<a href="#example-activity-diagram-for-addassignmentcommand" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h4> <span class="image-wrapper"><img src="/tp/diagrams/add-assignment/AddAssignmentActivityDiagram.png" alt="Activities inside the Logic Component for the `add_assignment` Command" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span> <h2 id="viewing-a-student-s-details">Viewing a student's details<a href="#viewing-a-student-s-details" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h2> <p>This <code class="hljs inline no-lang">view_student</code> command is a feature that allows the user to expand and view all of a student's details in the details panel, based on the student's index.
 Additional details such as a student's assignments and remarks, that are not visible in the list panel, will now also be visible in the details panel.</p> <h4 id="design-considerations-2">Design Considerations:<a href="#design-considerations-2" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h4> <p>In order to select a student to be displayed on the detail's panel, the student has to be identified from the list of contacts.</p> <p><strong>Aspect: Identifying the student to be displayed on the panel:</strong></p> <ul><li><p>Alternative 1 (current choice): Identify student by the student index.</p> <ul><li>Pros: Easy to implement, and less prone to Users making errors in command format.</li> <li>Cons: The student index in the list may change every time the list is filtered, which may be confusing for the user as he has to check for the student index every time he calls this command.</li></ul></li> <li><p>Alternative 2: Identify student by their name.</p> <ul><li>Pros: User will not have to check for the student index in the list every time he wants to call this command.</li> <li>Cons: As TAchy allows multiple contacts to be saved with the same name, additional fields such as phone number will have to be used in conjunction with &quot;name&quot; in order to differentiate between them. This will make the implementation more complex.</li></ul></li></ul> <h4 id="implementation-3">Implementation<a href="#implementation-3" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h4> <ul><li>LogicManager executes the command &quot;view_student&quot;.</li> <li>LogicManager parses the command via AddressBookParser.</li> <li>AddressBookParser creates and delegates parsing to ViewStudentCommandParser.</li> <li>ViewStudentCommandParser creates an ViewStudentCommand object.</li> <li>ViewStudentCommand is returned to ViewStudentCommandParser and back to AddressBookParser.</li> <li>LogicManager then executes ViewStudentCommand, which interacts with the Model.</li> <li>ViewStudentCommand creates a CommandResult object.</li> <li>CommandResult is returned to ViewStudentCommand, which returns the result to LogicManager.</li> <li>The sequence concludes with the return to the caller from LogicManager.</li> <li>This describes the flow of command execution, parsing, and interaction with the model.</li></ul> <h4 id="example-invocation-sequence-for-viewstudentcommand">Example invocation sequence for ViewStudentCommand<a href="#example-invocation-sequence-for-viewstudentcommand" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h4> <span class="image-wrapper"><img src="/tp/diagrams/ViewStudentSequenceDiagram.png" alt="Interactions Inside the Logic Component for the `view_student` Command" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span> <h2 id="adding-a-remark-to-a-student">Adding a remark to a student<a href="#adding-a-remark-to-a-student" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h2> <p>This <code class="hljs inline no-lang">remark</code> command allows the user to add a remark for a specific student.
-The user must specify the student's index from the displayed list, followed by the remark to be added.</p> <h4 id="design-considerations-3">Design Considerations:<a href="#design-considerations-3" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h4> <p>In order to add a remark to a student, the user must provide a number representing the student's index and remark string to get attached to that selected student from the list.</p> <p><strong>Aspect: Identifying the student to add a remark to:</strong></p> <ul><li><p>Alternative 1 (current choice): Identify the student by their index.</p> <ul><li>Pros: Straightforward and easy to implement. Users only need to reference the index in the list to add a remark, which makes it less error prone.</li> <li>Cons: The student index may change every time the list is filtered, so the user has to check for the student index every time the user before calling this command.</li></ul></li> <li><p>Alternative 2: Identify student by their name.</p> <ul><li>Pros: Users do not have to worry about filtered indexes, so the user does not have to check the list every time before calling this command.</li> <li>Cons: Since TAchy allows multiple contacts with the same name, the system may encounter ambiguity when handling duplicate names, so additional fields are required to uniquely identify the contacts.</li></ul></li></ul> <h4 id="implementation-4">Implementation<a href="#implementation-4" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h4> <ul><li>LogicManager executes the command &quot;remark&quot;.</li> <li>LogicManager parses the command via AddressBookParser.</li> <li>AddressBookParser creates and delegates parsing to RemarkCommandParser.</li> <li>RemarkCommandParser creates a RemarkCommand object.</li> <li>RemarkCommand is returned to RemarkCommandParser and back to AddressBookParser.</li> <li>LogicManager then executes RemarkCommand, which interacts with the Model.</li> <li>RemarkCommand creates a CommandResult object.</li> <li>CommandResult is returned to RemarkCommand, which returns the result to LogicManager.</li> <li>The sequence concludes with the return to the caller from LogicManager.</li> <li>This describes the flow of command execution, parsing, and interaction with the model.</li></ul> <h4 id="example-invocation-sequence-for-remarkcommand">Example invocation sequence for RemarkCommand<a href="#example-invocation-sequence-for-remarkcommand" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h4> <span class="image-wrapper"><img src="/tp/diagrams/RemarkSequenceDiagram.png" alt="Interactions Inside the Logic Component for the `remark` Command" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span> <h3 id="proposed-undo-redo-feature">[Proposed] Undo/redo feature<a href="#proposed-undo-redo-feature" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h3> <h4 id="proposed-implementation">Proposed Implementation<a href="#proposed-implementation" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h4> <p>The proposed undo/redo mechanism is facilitated by <code class="hljs inline no-lang">VersionedAddressBook</code>. It extends <code class="hljs inline no-lang">AddressBook</code> with an undo/redo history, stored internally as an <code class="hljs inline no-lang">addressBookStateList</code> and <code class="hljs inline no-lang">currentStatePointer</code>. Additionally, it implements the following operations:</p> <ul><li><code class="hljs inline no-lang">VersionedAddressBook#commit()</code> — Saves the current address book state in its history.</li> <li><code class="hljs inline no-lang">VersionedAddressBook#undo()</code> — Restores the previous address book state from its history.</li> <li><code class="hljs inline no-lang">VersionedAddressBook#redo()</code> — Restores a previously undone address book state from its history.</li></ul> <p>These operations are exposed in the <code class="hljs inline no-lang">Model</code> interface as <code class="hljs inline no-lang">Model#commitAddressBook()</code>, <code class="hljs inline no-lang">Model#undoAddressBook()</code> and <code class="hljs inline no-lang">Model#redoAddressBook()</code> respectively.</p> <p>Given below is an example usage scenario and how the undo/redo mechanism behaves at each step.</p> <p>Step 1. The user launches the application for the first time. The <code class="hljs inline no-lang">VersionedAddressBook</code> will be initialized with the initial address book state, and the <code class="hljs inline no-lang">currentStatePointer</code> pointing to that single address book state.</p> <span class="image-wrapper"><img src="/tp/diagrams/UndoRedoState0.png" alt="UndoRedoState0" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span> <p>Step 2. The user executes <code class="hljs inline no-lang">delete 5</code> command to delete the 5th student in the address book. The <code class="hljs inline no-lang">delete</code> command calls <code class="hljs inline no-lang">Model#commitAddressBook()</code>, causing the modified state of the address book after the <code class="hljs inline no-lang">delete 5</code> command executes to be saved in the <code class="hljs inline no-lang">addressBookStateList</code>, and the <code class="hljs inline no-lang">currentStatePointer</code> is shifted to the newly inserted address book state.</p> <span class="image-wrapper"><img src="/tp/diagrams/UndoRedoState1.png" alt="UndoRedoState1" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span> <p>Step 3. The user executes <code class="hljs inline no-lang">add n/David …​</code> to add a new student. The <code class="hljs inline no-lang">add</code> command also calls <code class="hljs inline no-lang">Model#commitAddressBook()</code>, causing another modified address book state to be saved into the <code class="hljs inline no-lang">addressBookStateList</code>.</p> <span class="image-wrapper"><img src="/tp/diagrams/UndoRedoState2.png" alt="UndoRedoState2" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span> <div class="alert box-container seamless" data-v-474166ec><!----> <div class="header-and-body" data-v-474166ec><!----> <div class="box-body-wrapper" data-v-474166ec><div class="icon-wrapper  text-info" data-v-474166ec><i class="fas fa-info" data-v-474166ec></i></div> <div aria-hidden="true" class="vertical-divider alert-info" data-v-474166ec></div> <div class="contents" data-v-474166ec><p data-v-474166ec><strong data-v-474166ec>Note:</strong> If a command fails its execution, it will not call <code class="hljs inline no-lang" data-v-474166ec>Model#commitAddressBook()</code>, so the address book state will not be saved into the <code class="hljs inline no-lang" data-v-474166ec>addressBookStateList</code>.</p></div> <!----></div></div></div> <p>Step 4. The user now decides that adding the student was a mistake, and decides to undo that action by executing the <code class="hljs inline no-lang">undo</code> command. The <code class="hljs inline no-lang">undo</code> command will call <code class="hljs inline no-lang">Model#undoAddressBook()</code>, which will shift the <code class="hljs inline no-lang">currentStatePointer</code> once to the left, pointing it to the previous address book state, and restores the address book to that state.</p> <span class="image-wrapper"><img src="/tp/diagrams/UndoRedoState3.png" alt="UndoRedoState3" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span> <div class="alert box-container seamless" data-v-474166ec><!----> <div class="header-and-body" data-v-474166ec><!----> <div class="box-body-wrapper" data-v-474166ec><div class="icon-wrapper  text-info" data-v-474166ec><i class="fas fa-info" data-v-474166ec></i></div> <div aria-hidden="true" class="vertical-divider alert-info" data-v-474166ec></div> <div class="contents" data-v-474166ec><p data-v-474166ec><strong data-v-474166ec>Note:</strong> If the <code class="hljs inline no-lang" data-v-474166ec>currentStatePointer</code> is at index 0, pointing to the initial AddressBook state, then there are no previous AddressBook states to restore. The <code class="hljs inline no-lang" data-v-474166ec>undo</code> command uses <code class="hljs inline no-lang" data-v-474166ec>Model#canUndoAddressBook()</code> to check if this is the case. If so, it will return an error to the user rather
-than attempting to perform the undo.</p></div> <!----></div></div></div> <p>The following sequence diagram shows how an undo operation goes through the <code class="hljs inline no-lang">Logic</code> component:</p> <span class="image-wrapper"><img src="/tp/diagrams/UndoSequenceDiagram-Logic.png" alt="UndoSequenceDiagram-Logic" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span> <div class="alert box-container seamless" data-v-474166ec><!----> <div class="header-and-body" data-v-474166ec><!----> <div class="box-body-wrapper" data-v-474166ec><div class="icon-wrapper  text-info" data-v-474166ec><i class="fas fa-info" data-v-474166ec></i></div> <div aria-hidden="true" class="vertical-divider alert-info" data-v-474166ec></div> <div class="contents" data-v-474166ec><p data-v-474166ec><strong data-v-474166ec>Note:</strong> The lifeline for <code class="hljs inline no-lang" data-v-474166ec>UndoCommand</code> should end at the destroy marker (X) but due to a limitation of PlantUML, the lifeline reaches the end of diagram.</p></div> <!----></div></div></div> <p>Similarly, how an undo operation goes through the <code class="hljs inline no-lang">Model</code> component is shown below:</p> <span class="image-wrapper"><img src="/tp/diagrams/UndoSequenceDiagram-Model.png" alt="UndoSequenceDiagram-Model" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span> <p>The <code class="hljs inline no-lang">redo</code> command does the opposite — it calls <code class="hljs inline no-lang">Model#redoAddressBook()</code>, which shifts the <code class="hljs inline no-lang">currentStatePointer</code> once to the right, pointing to the previously undone state, and restores the address book to that state.</p> <div class="alert box-container seamless" data-v-474166ec><!----> <div class="header-and-body" data-v-474166ec><!----> <div class="box-body-wrapper" data-v-474166ec><div class="icon-wrapper  text-info" data-v-474166ec><i class="fas fa-info" data-v-474166ec></i></div> <div aria-hidden="true" class="vertical-divider alert-info" data-v-474166ec></div> <div class="contents" data-v-474166ec><p data-v-474166ec><strong data-v-474166ec>Note:</strong> If the <code class="hljs inline no-lang" data-v-474166ec>currentStatePointer</code> is at index <code class="hljs inline no-lang" data-v-474166ec>addressBookStateList.size() - 1</code>, pointing to the latest address book state, then there are no undone AddressBook states to restore. The <code class="hljs inline no-lang" data-v-474166ec>redo</code> command uses <code class="hljs inline no-lang" data-v-474166ec>Model#canRedoAddressBook()</code> to check if this is the case. If so, it will return an error to the user rather than attempting to perform the redo.</p></div> <!----></div></div></div> <p>Step 5. The user then decides to execute the command <code class="hljs inline no-lang">list</code>. Commands that do not modify the address book, such as <code class="hljs inline no-lang">list</code>, will usually not call <code class="hljs inline no-lang">Model#commitAddressBook()</code>, <code class="hljs inline no-lang">Model#undoAddressBook()</code> or <code class="hljs inline no-lang">Model#redoAddressBook()</code>. Thus, the <code class="hljs inline no-lang">addressBookStateList</code> remains unchanged.</p> <span class="image-wrapper"><img src="/tp/diagrams/UndoRedoState4.png" alt="UndoRedoState4" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span> <p>Step 6. The user executes <code class="hljs inline no-lang">clear</code>, which calls <code class="hljs inline no-lang">Model#commitAddressBook()</code>. Since the <code class="hljs inline no-lang">currentStatePointer</code> is not pointing at the end of the <code class="hljs inline no-lang">addressBookStateList</code>, all address book states after the <code class="hljs inline no-lang">currentStatePointer</code> will be purged. Reason: It no longer makes sense to redo the <code class="hljs inline no-lang">add n/David …​</code> command. This is the behavior that most modern desktop applications follow.</p> <span class="image-wrapper"><img src="/tp/diagrams/UndoRedoState5.png" alt="UndoRedoState5" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span> <p>The following activity diagram summarizes what happens when a user executes a new command:</p> <span class="image-wrapper"><img src="/tp/diagrams/CommitActivityDiagram.png" width="250" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span> <h4 id="design-considerations-4">Design considerations:<a href="#design-considerations-4" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h4> <p><strong>Aspect: How undo &amp; redo executes:</strong></p> <ul><li><p><strong>Alternative 1 (current choice):</strong> Saves the entire address book.</p> <ul><li>Pros: Easy to implement.</li> <li>Cons: May have performance issues in terms of memory usage.</li></ul></li> <li><p><strong>Alternative 2:</strong> Individual command knows how to undo/redo by
-itself.</p> <ul><li>Pros: Will use less memory (e.g. for <code class="hljs inline no-lang">delete</code>, just save the student being deleted).</li> <li>Cons: We must ensure that the implementation of each individual command are correct.</li></ul></li></ul> <p><em>{more aspects and alternatives to be added}</em></p> <h3 id="proposed-data-archiving">[Proposed] Data archiving<a href="#proposed-data-archiving" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h3> <p><em>{Explain here how the data archiving feature will be implemented}</em></p> <hr> <h2 id="documentation-logging-testing-configuration-dev-ops"><strong>Documentation, logging, testing, configuration, dev-ops</strong><a href="#documentation-logging-testing-configuration-dev-ops" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h2> <ul><li><a href="/tp/Documentation.html">Documentation guide</a></li> <li><a href="/tp/Testing.html">Testing guide</a></li> <li><a href="/tp/Logging.html">Logging guide</a></li> <li><a href="/tp/Configuration.html">Configuration guide</a></li> <li><a href="/tp/DevOps.html">DevOps guide</a></li></ul> <hr> <h2 id="appendix-requirements"><strong>Appendix: Requirements</strong><a href="#appendix-requirements" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h2> <h3 id="product-scope">Product scope<a href="#product-scope" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h3> <p><strong>Target user profile</strong>:</p> <ul><li>Tech-savvy Tuition Teachers</li></ul> <p><strong>Value proposition</strong>:</p> <ul><li>Provide a fast CLI for tutors to manage and track students' work and submissions.</li> <li>Provides an efficient CLI for tutors to plan and manage classes</li> <li>Provides some interface for arranging classes</li></ul> <h3 id="user-stories">User stories<a href="#user-stories" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h3> <p>Priorities: Very high (must have) - <code class="hljs inline no-lang">****</code>,  High (good to have) - <code class="hljs inline no-lang">***</code>, Medium (should have) - <code class="hljs inline no-lang">**</code>, Low (unlikely to have) -  <code class="hljs inline no-lang">*</code>,</p> <div class="table-responsive"><table class="markbind-table table table-bordered table-striped"><thead><tr><th>Priority</th> <th>As a …​</th> <th>I want to …​</th> <th>So that I can…​</th></tr></thead> <tbody><tr><td><code class="hljs inline no-lang">****</code></td> <td>teacher with multiple students</td> <td>add a new student</td> <td>store <br>important data about my students</td></tr> <tr><td><code class="hljs inline no-lang">****</code></td> <td>teacher with multiple students</td> <td>view my students</td> <td>see who is in my class</td></tr> <tr><td><code class="hljs inline no-lang">****</code></td> <td>teacher</td> <td>delete a student's information</td> <td>remove students who are no longer part of my class</td></tr> <tr><td><code class="hljs inline no-lang">****</code></td> <td>teacher</td> <td>add assignments</td> <td>track assignments for students</td></tr> <tr><td><code class="hljs inline no-lang">****</code></td> <td>teacher</td> <td>add an assignment score to a student</td> <td>grade my students</td></tr> <tr><td><code class="hljs inline no-lang">****</code></td> <td>teacher</td> <td>delete assignments</td> <td>remove old assignments</td></tr> <tr><td><code class="hljs inline no-lang">****</code></td> <td>teacher</td> <td>save data locally</td> <td>access them at a later time</td></tr> <tr><td><code class="hljs inline no-lang">****</code></td> <td>teacher  who grades assignments</td> <td>edit status of submitted assignments</td> <td>keep track if a student has submitted an assignment</td></tr> <tr><td><code class="hljs inline no-lang">***</code></td> <td>teacher</td> <td>create remark for individual students</td> <td>not forget any special consideration for certain students</td></tr> <tr><td><code class="hljs inline no-lang">***</code></td> <td>teacher</td> <td>edit assignments</td> <td>ensure that the assignments are up to date</td></tr> <tr><td><code class="hljs inline no-lang">***</code></td> <td>teacher</td> <td>view my student's student information</td> <td>know how I can student them if there are any issues</td></tr> <tr><td><code class="hljs inline no-lang">***</code></td> <td>teacher</td> <td>view the submission deadlines</td> <td>know when to remind my students</td></tr> <tr><td><code class="hljs inline no-lang">***</code></td> <td>forgetful teacher</td> <td>be reminded on deadlines due in 2 days</td> <td>prioritize which assignments to mark</td></tr> <tr><td><code class="hljs inline no-lang">***</code></td> <td>teacher</td> <td>sort an assignment by score</td> <td>see the best and worst performers</td></tr> <tr><td><code class="hljs inline no-lang">**</code></td> <td>teacher</td> <td>link scanned PDF files (URL) to a student</td> <td>keep track of previous assignments for each student</td></tr> <tr><td><code class="hljs inline no-lang">**</code></td> <td>teacher</td> <td>view all the files (or just file names) submitted by the student before</td> <td>not waste time finding them somewhere else</td></tr> <tr><td><code class="hljs inline no-lang">**</code></td> <td>teacher who wants to improve grades</td> <td>create a priority list of students who need the most attention</td> <td>allocate my time effectively</td></tr> <tr><td><code class="hljs inline no-lang">*</code></td> <td>teacher</td> <td>view a student's attendance history</td> <td>mark their attendance scores throughout the whole semester</td></tr> <tr><td><code class="hljs inline no-lang">*</code></td> <td>teacher</td> <td>mark attendance and manage participation marks for different students in real time</td> <td>not need to update from paper every time</td></tr></tbody></table></div><p><em>{More to be added}</em></p> <h3 id="use-cases">Use cases<a href="#use-cases" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h3> <p>(For all use cases below, the <strong>System</strong> is the <code class="hljs inline no-lang">TAchy</code> and the <strong>Actor</strong> is the <code class="hljs inline no-lang">tuition teacher</code>,
-unless specified otherwise)</p> <p><strong>Use case: Add a student</strong></p> <p><strong>MSS</strong></p> <ol><li><p>Teacher requests to add a student</p></li> <li><p>TAchy adds the student to the student list</p> <p>Use case ends.</p></li></ol> <p><strong>Extensions</strong></p> <ul><li><p>1a. The student name is invalid.</p> <ul><li><p>1a1. TAchy shows an error message.</p> <p>Use case ends.</p></li></ul></li> <li><p>1b. The student information already exists.</p> <ul><li><p>1b1. TAchy an error message of duplicate student.</p></li> <li><p>1b2. Teacher adds the student again by providing a different tag.</p> <p>Use case resumes at step 2.</p></li></ul></li></ul> <hr> <p><strong>Use case: Delete a student</strong></p> <p><strong>MSS</strong></p> <ol><li><p>Teacher requests to list the students</p></li> <li><p>Teacher requests to delete a student by index
-3TAchy deletes the student from the student list</p> <p>Use case ends.</p></li></ol> <p><strong>Extensions</strong></p> <ul><li><p>1a. There is no students in the app.</p> <ul><li><p>1a1. TAchy displays a &quot;no students&quot; message.</p> <p>Use case ends.</p></li></ul></li> <li><p>2a. The student index is invalid.</p> <ul><li><p>2a1. TAchy shows an error message.</p> <p>Use case ends.</p></li></ul></li></ul> <hr> <p><strong>Use case: List students</strong></p> <p><strong>MSS</strong></p> <ol><li><p>Teacher requests to list students.</p></li> <li><p>TAchy displays the list of students in the current class.</p> <p>Use case ends.</p></li></ol> <p><strong>Extensions</strong></p> <ul><li>1a. There is no students in the app.
-<ul><li><p>1a1. TAchy displays a &quot;no students&quot; message.</p> <p>Use case ends.</p></li></ul></li></ul> <hr> <p><strong>Use case: Find a student</strong></p> <p><strong>MSS</strong></p> <ol><li><p>Teacher requests to search for a student by name.</p></li> <li><p>TAchy displays the student(s) matching the search query.</p> <p>Use case ends.</p></li></ol> <p><strong>Extensions</strong></p> <ul><li>1a. No student matches the query.
-<ul><li><p>1a1. TAchy displays a &quot;no students found&quot; message.</p> <p>Use case ends.</p></li></ul></li></ul> <hr> <p><strong>Use case: Add assignment</strong></p> <p><strong>MSS</strong></p> <ol><li><p>Teacher requests to add an assignment to a student by index.</p></li> <li><p>TAchy adds the assignment to the student's assignment list.</p> <p>Use case ends.</p></li></ol> <p><strong>Extensions</strong></p> <ul><li><p>1a. The student index is invalid.</p> <ul><li><p>1a1. TAchy shows an error message.</p> <p>Use case ends.</p></li></ul></li> <li><p>1b. The assignment name is invalid.</p> <ul><li><p>1b1. TAchy shows an error message.</p> <p>Use case ends.</p></li></ul></li> <li><p>1c. The assignment already exists under the student.</p> <ul><li><p>1c1. TAchy shows a warning message.</p> <p>Use case ends.</p></li></ul></li></ul> <hr> <p><strong>Use case: Delete assignment</strong></p> <p><strong>MSS</strong></p> <ol><li><p>Teacher requests to delete an assignment for a student by index.</p></li> <li><p>TAchy removes the assignment from the student's assignment list.</p> <p>Use case ends.</p></li></ol> <p><strong>Extensions</strong></p> <ul><li><p>1a. The student index is invalid.</p> <ul><li><p>1a1. TAchy shows an error message.</p> <p>Use case ends.</p></li></ul></li> <li><p>1b. The assignment index is invalid.</p> <ul><li><p>1b1. TAchy shows an error message.</p> <p>Use case ends.</p></li></ul></li></ul> <hr> <p><strong>Use case: Edit assignment</strong></p> <p><strong>MSS</strong></p> <ol><li><p>Teacher requests to edit an assignment for a student by index.</p></li> <li><p>TAchy modifies the assignment detail in the student's assignment list.</p> <p>Use case ends.</p></li></ol> <p><strong>Extensions</strong></p> <ul><li><p>1a. The student index is invalid.</p> <ul><li><p>1a1. TAchy shows an error message.</p> <p>Use case ends.</p></li></ul></li> <li><p>1b. The assignment index is invalid.</p> <ul><li><p>1b1. TAchy shows an error message.</p> <p>Use case ends.</p></li></ul></li></ul> <hr> <p><strong>Use case: Mark assignment</strong></p> <p><strong>MSS</strong></p> <ol><li><p>Teacher requests to mark a assignment as submitted for a student by index.</p></li> <li><p>TAchy modifies the assignment submission status in the student's assignment list.</p> <p>Use case ends.</p></li></ol> <p><strong>Extensions</strong></p> <ul><li><p>1a. The student index is invalid.</p> <ul><li><p>1a1. TAchy shows an error message.</p> <p>Use case ends.</p></li></ul></li> <li><p>1b. The assignment index is invalid.</p> <ul><li><p>1b1. TAchy shows an error message.</p> <p>Use case ends.</p></li></ul></li></ul> <hr> <p><strong>Use case: Unmark assignment</strong></p> <p><strong>MSS</strong></p> <ol><li><p>Teacher requests to mark a assignment as not submitted for a student by index.</p></li> <li><p>TAchy modifies the assignment submission status in the student's assignment list.</p> <p>Use case ends.</p></li></ol> <p><strong>Extensions</strong></p> <ul><li><p>1a. The student index is invalid.</p> <ul><li><p>1a1. TAchy shows an error message.</p> <p>Use case ends.</p></li></ul></li> <li><p>1b. The assignment index is invalid.</p> <ul><li><p>1b1. TAchy shows an error message.</p> <p>Use case ends.</p></li></ul></li></ul> <hr> <p><strong>Use case: Grade assignment</strong></p> <p><strong>MSS</strong></p> <ol><li><p>Teacher requests to add a grade for a student’s assignment by index.</p></li> <li><p>TAchy records the grade for the student’s assignment.</p> <p>Use case ends.</p></li></ol> <p><strong>Extensions</strong></p> <ul><li><p>1a. The student index is invalid.</p> <ul><li><p>1a1. TAchy shows an error message.</p> <p>Use case ends.</p></li></ul></li> <li><p>1b. The assignment index is invalid.</p> <ul><li><p>1b1. TAchy shows an error message.</p> <p>Use case ends.</p></li></ul></li> <li><p>1c. The grade is invalid.</p> <ul><li><p>1c1. TAchy shows an error message.</p> <p>Use case ends.</p></li></ul></li> <li><p>1d. The student has already been graded for the assignment.</p> <ul><li><p>1d1. TAchy shows a warning message.</p></li> <li><p>1d2. TAchy asks if the Teacher wants to overwrite the grade.</p></li> <li><p>1d3. Teacher confirms the overwrite.</p></li> <li><p>1d4. TAchy records the new grade.</p> <p>Use case resumes at step 2.</p></li></ul></li></ul> <hr> <p><strong>Use case: Sort students by an assignment score</strong></p> <p><strong>MSS</strong></p> <ol><li><p>Teacher requests to sort students by the score of an assignment.</p></li> <li><p>TAchy sorts the assignment results by score in ascending or descending order.</p> <p>Use case ends.</p></li></ol> <p><strong>Extensions</strong></p> <ul><li>1a. The assignment does not exist.
-<ul><li><p>1a1. TAchy shows an error message.</p> <p>Use case ends.</p></li></ul></li> <li>1b. The assignment has not been graded for all students.
-<ul><li><p>1b1. TAchy shows a warning message.</p></li> <li><p>1b2. TAchy asks if the Teacher wants to proceed.</p></li> <li><p>1b3. Teacher confirms the action.</p> <p>Use case resumes at step 2.</p></li></ul></li> <li>1c. The assignment has not been graded for any student.
-<ul><li><p>1c1. TAchy shows an error message.</p> <p>Use case ends.</p></li></ul></li></ul> <hr> <p><strong>Use case: Link scanned PDF to a student</strong></p> <p><strong>MSS</strong></p> <ol><li><p>Teacher requests to list all documents stored in a file directory.</p></li> <li><p>TAchy displays the list of documents.</p></li> <li><p>Teacher requests to link a document to a student by index by name.</p></li> <li><p>TAchy records the link.</p> <p>Use case ends.</p></li></ol> <p><strong>Extensions</strong></p> <ul><li>1a. No documents found in the directory.
-<ul><li><p>1a1. TAchy displays a &quot;no documents found&quot; message.</p> <p>Use case ends.</p></li></ul></li> <li>3a. The student name is not in the list.
-<ul><li><p>3a1. TAchy displays a &quot;no students found&quot; message.</p> <p>Use case ends.</p></li></ul></li> <li>3b. There are multiple students with the name.
-<ul><li><p>3b1. TAchy shows a list of students with the same name with indices.</p></li> <li><p>3b2. Teacher links the document to one of them by index.</p> <p>Use case resumes at step 4.</p></li></ul></li></ul> <hr> <p><strong>Use case: Create student priority list</strong></p> <p><strong>MSS</strong></p> <ol><li><p>Teacher requests to list students</p></li> <li><p>Teacher requests to create a list of students who need the most attention by indices.</p></li> <li><p>TAchy generates a list of selected students.</p> <p>Use case ends.</p></li></ol> <p><strong>Extensions</strong></p> <ul><li>2a. The student index is invalid.
-<ul><li><p>2a1. TAchy shows an error message.</p> <p>Use case ends.</p></li></ul></li></ul> <hr> <p><strong>Use case: Add remark for individual student</strong></p> <p><strong>MSS</strong></p> <ol><li><p>Teacher requests to add a remark for a student by index.</p></li> <li><p>TAchy records the remark in the student’s profile.</p> <p>Use case ends.</p></li></ol> <p><strong>Extensions</strong></p> <ul><li><p>1a. The student index is invalid.</p> <ul><li><p>1a1. TAchy shows an error message.</p> <p>Use case ends.</p></li></ul></li> <li><p>1b. The student already has a remark.</p> <ul><li><p>1b1. TAchy shows a warning message.</p></li> <li><p>1b2. TAchy asks if the Teacher wants to overwrite the remark.</p></li> <li><p>1b3. Teacher confirms the overwrite.</p></li> <li><p>1b4. TAchy records the new remark.</p> <p>Use case resumes at step 2.</p></li></ul></li></ul> <p><em>{More to be added}</em></p> <h3 id="non-functional-requirements">Non-Functional Requirements<a href="#non-functional-requirements" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h3> <ol><li>Should work on any <em>mainstream OS</em> as long as it has Java <code class="hljs inline no-lang">17</code> or above installed.</li> <li>Should be able to hold up to 1000 students without a noticeable sluggishness in performance for typical usage.</li> <li>A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most of the tasks faster using commands than using the mouse.</li></ol> <ul><li>Business/domain rules: Each student must be uniquely identifiable by their student ID, Assignments must have deadlines that  cannot be set on a date that has passed, Each class should not exceed 50 students, Assignments must be submitted by students up to the deadline set by the Teacher</li> <li>Constraints: The system must be backward compatible with data produced by earlier versions of the system, The total project cost should be $0, The project is offered as a free service, TAs are only allowed to store up to 5 GB of data</li> <li>Technical requirements: The system should work on both 32-bit and 64-bit environment, The system should be compatible with Windows, macOS and Linux operating systems.</li> <li>Performance requirements: The system should respond to user inputs within five seconds, The system should be able to handle a large number of students, classes, and assignments without degradation in performance, Data retrieval should not take longer than 2 seconds.</li> <li>Quality requirements: The system should be usable by a novice who has never used AB3 before, The system should have clear user documentation to guide users through its features, Intuitive error messages will be displayed to the user so that they know what is the correct method of using the system</li> <li>Process requirements: The project is expected to adhere to the milestones which are added every week</li> <li>Notes about project scope: The system is not required to integrate with third-party systems (e.g. Canvas), The system is not required to generate or print detailed reports of class performance or assignment scores, The system will only support English as the user interface language, The system will not be deployed on the cloud and will only run locally</li> <li>Any other noteworthy points: The system must ensure data privary by adhering to relevant data protection regulations, The system should not use any langauge or imagery that may be offensive to students or faculty members from different cultural backgrounds.</li></ul> <h3 id="glossary">Glossary<a href="#glossary" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h3> <ul><li><strong>Mainstream OS</strong>: Windows, Linux, Unix, MacOS</li> <li><strong>Private student detail</strong>: A student detail that is not meant to be shared with others</li> <li><strong>Teacher</strong> : Abbreviation of Teaching Assistant, a student responsible for assisting instructors in managing courses</li> <li><strong>Class</strong>: A group of students taking the same course assigned to a specific tutorial, sectional, laboratory or recitation which a Teacher is responsible for.</li></ul> <hr> <h2 id="appendix-instructions-for-manual-testing"><strong>Appendix: Instructions for manual testing</strong><a href="#appendix-instructions-for-manual-testing" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h2> <p>Given below are instructions to test the app manually.</p> <div class="alert box-container seamless" data-v-474166ec><!----> <div class="header-and-body" data-v-474166ec><!----> <div class="box-body-wrapper" data-v-474166ec><div class="icon-wrapper  text-info" data-v-474166ec><i class="fas fa-info" data-v-474166ec></i></div> <div aria-hidden="true" class="vertical-divider alert-info" data-v-474166ec></div> <div class="contents" data-v-474166ec><p data-v-474166ec><strong data-v-474166ec>Note:</strong> These instructions only provide a starting point for testers to work on;
-testers are expected to do more <em data-v-474166ec>exploratory</em> testing.</p></div> <!----></div></div></div> <h3 id="launch-and-shutdown">Launch and shutdown<a href="#launch-and-shutdown" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h3> <ol><li><p>Initial launch</p> <ol><li><p>Download the jar file and copy into an empty folder</p></li> <li><p>Double-click the jar file Expected: Shows the GUI with a set of sample contacts. The window size may not be optimum.</p></li></ol></li> <li><p>Saving window preferences</p> <ol><li><p>Resize the window to an optimum size. Move the window to a different location. Close the window.</p></li> <li><p>Re-launch the app by double-clicking the jar file.<br>
-Expected: The most recent window size and location is retained.</p></li></ol></li> <li><p><em>{ more test cases …​ }</em></p></li></ol> <h3 id="deleting-a-student">Deleting a student<a href="#deleting-a-student" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h3> <ol><li><p>Deleting a student while all students are being shown</p> <ol><li><p>Prerequisites: List all students using the <code class="hljs inline no-lang">list</code> command. Multiple students in the list.</p></li> <li><p>Test case: <code class="hljs inline no-lang">delete 1</code><br>
-Expected: First student is deleted from the list. Details of the deleted student shown in the status message. Timestamp in the status bar is updated.</p></li> <li><p>Test case: <code class="hljs inline no-lang">delete 0</code><br>
-Expected: No student is deleted. Error details shown in the status message. Status bar remains the same.</p></li> <li><p>Other incorrect delete commands to try: <code class="hljs inline no-lang">delete</code>, <code class="hljs inline no-lang">delete x</code>, <code class="hljs inline no-lang">...</code> (where x is larger than the list size)<br>
-Expected: Similar to previous.</p></li></ol></li> <li><p><em>{ more test cases …​ }</em></p></li></ol> <h3 id="saving-data">Saving data<a href="#saving-data" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h3> <ol><li><p>Dealing with missing/corrupted data files</p> <ol><li><em>{explain how to simulate a missing/corrupted file, and the expected behavior}</em></li></ol></li> <li><p><em>{ more test cases …​ }</em></p></li></ol></div> <nav id="page-nav" data-v-e6005420><div class="nav-component slim-scroll" data-v-e6005420><nav id="mb-page-nav" class="nav nav-pills flex-column my-0 small no-flex-wrap" data-v-e6005420><a class="nav-link py-1" href="#tachy-developer-guide" data-v-e6005420>TAchy Developer Guide‎</a> <nav class="nav nav-pills flex-column my-0 nested no-flex-wrap" data-v-e6005420><a class="nav-link py-1" href="#acknowledgements" data-v-e6005420>Acknowledgements‎</a> <a class="nav-link py-1" href="#setting-up-getting-started" data-v-e6005420>Setting up, getting started‎</a> <a class="nav-link py-1" href="#design" data-v-e6005420>Design‎</a> <nav class="nav nav-pills flex-column my-0 nested no-flex-wrap" data-v-e6005420><a class="nav-link py-1" href="#architecture" data-v-e6005420>Architecture‎</a> <a class="nav-link py-1" href="#ui-component" data-v-e6005420>UI component‎</a> <a class="nav-link py-1" href="#logic-component" data-v-e6005420>Logic component‎</a> <a class="nav-link py-1" href="#model-component" data-v-e6005420>Model component‎</a> <a class="nav-link py-1" href="#storage-component" data-v-e6005420>Storage component‎</a> <a class="nav-link py-1" href="#common-classes" data-v-e6005420>Common classes‎</a></nav> <a class="nav-link py-1" href="#implementation" data-v-e6005420>Implementation‎</a> <nav class="nav nav-pills flex-column my-0 nested no-flex-wrap" data-v-e6005420><a class="nav-link py-1" href="#introduction" data-v-e6005420>Introduction‎</a> <a class="nav-link py-1" href="#features-overview" data-v-e6005420>Features Overview‎</a></nav> <a class="nav-link py-1" href="#adding-a-new-assignment" data-v-e6005420>Adding a new Assignment‎</a> <a class="nav-link py-1" href="#viewing-a-student-s-details" data-v-e6005420>Viewing a student's details‎</a> <a class="nav-link py-1" href="#adding-a-remark-to-a-student" data-v-e6005420>Adding a remark to a student‎</a> <nav class="nav nav-pills flex-column my-0 nested no-flex-wrap" data-v-e6005420><a class="nav-link py-1" href="#proposed-undo-redo-feature" data-v-e6005420>[Proposed] Undo/redo feature‎</a> <a class="nav-link py-1" href="#proposed-data-archiving" data-v-e6005420>[Proposed] Data archiving‎</a></nav> <a class="nav-link py-1" href="#documentation-logging-testing-configuration-dev-ops" data-v-e6005420>Documentation, logging, testing, configuration, dev-ops‎</a> <a class="nav-link py-1" href="#appendix-requirements" data-v-e6005420>Appendix: Requirements‎</a> <nav class="nav nav-pills flex-column my-0 nested no-flex-wrap" data-v-e6005420><a class="nav-link py-1" href="#product-scope" data-v-e6005420>Product scope‎</a> <a class="nav-link py-1" href="#user-stories" data-v-e6005420>User stories‎</a> <a class="nav-link py-1" href="#use-cases" data-v-e6005420>Use cases‎</a> <a class="nav-link py-1" href="#non-functional-requirements" data-v-e6005420>Non-Functional Requirements‎</a> <a class="nav-link py-1" href="#glossary" data-v-e6005420>Glossary‎</a></nav> <a class="nav-link py-1" href="#appendix-instructions-for-manual-testing" data-v-e6005420>Appendix: Instructions for manual testing‎</a> <nav class="nav nav-pills flex-column my-0 nested no-flex-wrap" data-v-e6005420><a class="nav-link py-1" href="#launch-and-shutdown" data-v-e6005420>Launch and shutdown‎</a> <a class="nav-link py-1" href="#deleting-a-student" data-v-e6005420>Deleting a student‎</a> <a class="nav-link py-1" href="#saving-data" data-v-e6005420>Saving data‎</a></nav></nav> <!----></nav></div> <!----></nav> <div aria-hidden="true" class="scroll-top-button fa-lg d-print-none" style="display:none;bottom:2%;right:2%;position:fixed;"><i class="fas fa-arrow-circle-up"></i></div></div> <footer><div class="text-center"><small>[<span><strong>Powered by</strong></span> <img src="https://markbind.org/favicon.ico" width="30"> <a href="https://markbind.org/">MarkBind 5.5.3</a>, generated on Wed, 23 Oct 2024, 20:18:25 GMT+8]</small></div></footer></div>
+The user must specify the student's index from the displayed list, followed by the remark to be added.</p> <h4 id="design-considerations-3">Design Considerations:<a href="#design-considerations-3" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h4> <p>In order to add a remark to a student, the user must provide a number representing the student's index and remark string to get attached to that selected student from the list.</p> <p><strong>Aspect: Identifying the student to add a remark to:</strong></p> <ul><li><p>Alternative 1 (current choice): Identify the student by their index.</p> <ul><li>Pros: Straightforward and easy to implement. Users only need to reference the index in the list to add a remark, which makes it less error prone.</li> <li>Cons: The student index may change every time the list is filtered, so the user has to check for the student index every time the user before calling this command.</li></ul></li> <li><p>Alternative 2: Identify student by their name.</p> <ul><li>Pros: Users do not have to worry about filtered indexes, so the user does not have to check the list every time before calling this command.</li> <li>Cons: Since TAchy allows multiple contacts with the same name, the system may encounter ambiguity when handling duplicate names, so additional fields are required to uniquely identify the contacts.</li></ul></li></ul> <h4 id="implementation-4">Implementation<a href="#implementation-4" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h4> <ul><li>LogicManager executes the command &quot;remark&quot;.</li> <li>LogicManager parses the command via AddressBookParser.</li> <li>AddressBookParser creates and delegates parsing to RemarkCommandParser.</li> <li>RemarkCommandParser creates a RemarkCommand object.</li> <li>RemarkCommand is returned to RemarkCommandParser and back to AddressBookParser.</li> <li>LogicManager then executes RemarkCommand, which interacts with the Model.</li> <li>RemarkCommand creates a CommandResult object.</li> <li>CommandResult is returned to RemarkCommand, which returns the result to LogicManager.</li> <li>The sequence concludes with the return to the caller from LogicManager.</li> <li>This describes the flow of command execution, parsing, and interaction with the model.</li></ul> <h4 id="example-invocation-sequence-for-remarkcommand">Example invocation sequence for RemarkCommand<a href="#example-invocation-sequence-for-remarkcommand" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h4> <span class="image-wrapper"><img src="/tp/diagrams/RemarkSequenceDiagram.png" alt="Interactions Inside the Logic Component for the `remark` Command" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span> <h4 id="example-activity-diagram-for-remarkcommand">Example activity diagram for RemarkCommand<a href="#example-activity-diagram-for-remarkcommand" onclick="event.stopPropagation()" class="fa fa-anchor"></a></h4> <span class="image-wrapper"><img src="/tp/diagrams/add-remark/RemarkCommandActivityDiagram.png" alt="Activities inside the Logic Component for the 
+`remark` Command" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span>
+
+### \[Proposed\] Undo/redo feature
+
+#### Proposed Implementation
+
+The proposed undo/redo mechanism is facilitated by `VersionedAddressBook`. It extends `AddressBook` with an undo/redo history, stored internally as an `addressBookStateList` and `currentStatePointer`. Additionally, it implements the following operations:
+
+* `VersionedAddressBook#commit()` — Saves the current address book state in its history.
+* `VersionedAddressBook#undo()` — Restores the previous address book state from its history.
+* `VersionedAddressBook#redo()` — Restores a previously undone address book state from its history.
+
+These operations are exposed in the `Model` interface as `Model#commitAddressBook()`, `Model#undoAddressBook()` and `Model#redoAddressBook()` respectively.
+
+Given below is an example usage scenario and how the undo/redo mechanism behaves at each step.
+
+Step 1. The user launches the application for the first time. The `VersionedAddressBook` will be initialized with the initial address book state, and the `currentStatePointer` pointing to that single address book state.
+
+<span class="image-wrapper"><img src="/tp/diagrams/UndoRedoState0.png" alt="UndoRedoState0" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span>
+
+Step 2. The user executes `delete 5` command to delete the 5th student in the address book. The `delete` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete 5` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
+
+<span class="image-wrapper"><img src="/tp/diagrams/UndoRedoState1.png" alt="UndoRedoState1" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span>
+
+Step 3. The user executes `add n/David …​` to add a new student. The `add` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
+
+<span class="image-wrapper"><img src="/tp/diagrams/UndoRedoState2.png" alt="UndoRedoState2" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span> <div class="alert box-container seamless" data-v-474166ec><!----> <div class="header-and-body" data-v-474166ec><!----> <div class="box-body-wrapper" data-v-474166ec><div class="icon-wrapper  text-info" data-v-474166ec><i class="fas fa-info" data-v-474166ec></i></div> <div aria-hidden="true" class="vertical-divider alert-info" data-v-474166ec></div> <div class="contents" data-v-474166ec>
+
+**Note:** If a command fails its execution, it will not call `Model#commitAddressBook()`, so the address book state will not be saved into the `addressBookStateList`.
+
+</div> <!----></div></div></div>
+
+Step 4. The user now decides that adding the student was a mistake, and decides to undo that action by executing the `undo` command. The `undo` command will call `Model#undoAddressBook()`, which will shift the `currentStatePointer` once to the left, pointing it to the previous address book state, and restores the address book to that state.
+
+<span class="image-wrapper"><img src="/tp/diagrams/UndoRedoState3.png" alt="UndoRedoState3" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span> <div class="alert box-container seamless" data-v-474166ec><!----> <div class="header-and-body" data-v-474166ec><!----> <div class="box-body-wrapper" data-v-474166ec><div class="icon-wrapper  text-info" data-v-474166ec><i class="fas fa-info" data-v-474166ec></i></div> <div aria-hidden="true" class="vertical-divider alert-info" data-v-474166ec></div> <div class="contents" data-v-474166ec>
+
+**Note:** If the `currentStatePointer` is at index 0, pointing to the initial AddressBook state, then there are no previous AddressBook states to restore. The `undo` command uses `Model#canUndoAddressBook()` to check if this is the case. If so, it will return an error to the user rather
+than attempting to perform the undo.
+
+</div> <!----></div></div></div>
+
+The following sequence diagram shows how an undo operation goes through the `Logic` component:
+
+<span class="image-wrapper"><img src="/tp/diagrams/UndoSequenceDiagram-Logic.png" alt="UndoSequenceDiagram-Logic" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span> <div class="alert box-container seamless" data-v-474166ec><!----> <div class="header-and-body" data-v-474166ec><!----> <div class="box-body-wrapper" data-v-474166ec><div class="icon-wrapper  text-info" data-v-474166ec><i class="fas fa-info" data-v-474166ec></i></div> <div aria-hidden="true" class="vertical-divider alert-info" data-v-474166ec></div> <div class="contents" data-v-474166ec>
+
+**Note:** The lifeline for `UndoCommand` should end at the destroy marker (X) but due to a limitation of PlantUML, the lifeline reaches the end of diagram.
+
+</div> <!----></div></div></div>
+
+Similarly, how an undo operation goes through the `Model` component is shown below:
+
+<span class="image-wrapper"><img src="/tp/diagrams/UndoSequenceDiagram-Model.png" alt="UndoSequenceDiagram-Model" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span>
+
+The `redo` command does the opposite — it calls `Model#redoAddressBook()`, which shifts the `currentStatePointer` once to the right, pointing to the previously undone state, and restores the address book to that state.
+
+<div class="alert box-container seamless" data-v-474166ec><!----> <div class="header-and-body" data-v-474166ec><!----> <div class="box-body-wrapper" data-v-474166ec><div class="icon-wrapper  text-info" data-v-474166ec><i class="fas fa-info" data-v-474166ec></i></div> <div aria-hidden="true" class="vertical-divider alert-info" data-v-474166ec></div> <div class="contents" data-v-474166ec>
+
+**Note:** If the `currentStatePointer` is at index `addressBookStateList.size() - 1`, pointing to the latest address book state, then there are no undone AddressBook states to restore. The `redo` command uses `Model#canRedoAddressBook()` to check if this is the case. If so, it will return an error to the user rather than attempting to perform the redo.
+
+</div> <!----></div></div></div>
+
+Step 5. The user then decides to execute the command `list`. Commands that do not modify the address book, such as `list`, will usually not call `Model#commitAddressBook()`, `Model#undoAddressBook()` or `Model#redoAddressBook()`. Thus, the `addressBookStateList` remains unchanged.
+
+<span class="image-wrapper"><img src="/tp/diagrams/UndoRedoState4.png" alt="UndoRedoState4" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span>
+
+Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be purged. Reason: It no longer makes sense to redo the `add n/David …​` command. This is the behavior that most modern desktop applications follow.
+
+<span class="image-wrapper"><img src="/tp/diagrams/UndoRedoState5.png" alt="UndoRedoState5" width="" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span>
+
+The following activity diagram summarizes what happens when a user executes a new command:
+
+<span class="image-wrapper"><img src="/tp/diagrams/CommitActivityDiagram.png" width="250" height="" loading="eager" class="img-fluid rounded"> <span class="image-caption"></span></span>
+
+#### Design considerations:
+
+**Aspect: How undo &amp; redo executes:**
+
+* **Alternative 1 (current choice):** Saves the entire address book.
+  * Pros: Easy to implement.
+  * Cons: May have performance issues in terms of memory usage.
+
+* **Alternative 2:** Individual command knows how to undo/redo by
+  itself.
+  * Pros: Will use less memory (e.g. for `delete`, just save the student being deleted).
+  * Cons: We must ensure that the implementation of each individual command are correct.
+
+_{more aspects and alternatives to be added}_
+
+### \[Proposed\] Data archiving
+
+_{Explain here how the data archiving feature will be implemented}_
+
+
+--------------------------------------------------------------------------------------------------------------------
+
+## **Documentation, logging, testing, configuration, dev-ops**
+
+* [Documentation guide](Documentation.md)
+* [Testing guide](Testing.md)
+* [Logging guide](Logging.md)
+* [Configuration guide](Configuration.md)
+* [DevOps guide](DevOps.md)
+
+--------------------------------------------------------------------------------------------------------------------
+
+## **Appendix: Requirements**
+
+### Product scope
+
+**Target user profile**:
+
+* Tech-savvy Tuition Teachers
+
+**Value proposition**:
+
+* Provide a fast CLI for tutors to manage and track students' work and submissions.
+* Provides an efficient CLI for tutors to plan and manage classes
+* Provides some interface for arranging classes
+
+
+### User stories
+
+Priorities: Very high (must have) - `****`,  High (good to have) - `***`, Medium (should have) - `**`, Low (unlikely to have) -  `*`,
+
+| Priority | As a …​                             | I want to …​                                                                  | So that I can…​                                            |
+|----------|-------------------------------------|-------------------------------------------------------------------------------|------------------------------------------------------------|
+| `****`   | teacher with multiple students      | add a new student                                                             | store <br>important data about my students                |
+| `****`   | teacher with multiple students      | view my students                                                              | see who is in my class                                     |
+| `****`   | teacher                             | delete a student's information                                                | remove students who are no longer part of my class         |
+| `****`   | teacher                             | add assignments                                                               | track assignments for students                             |
+| `****`   | teacher                             | add an assignment score to a student                                          | grade my students                                          |
+| `****`   | teacher                             | delete assignments                                                            | remove old assignments                                     |
+| `****`   | teacher                             | save data locally                                                             | access them at a later time                                |
+| `****`   | teacher  who grades assignments     | edit status of submitted assignments                                          | keep track if a student has submitted an assignment        |
+| `***`    | teacher                             | create remark for individual students                                         | not forget any special consideration for certain students  |
+| `***`    | teacher                             | edit assignments                                                              | ensure that the assignments are up to date                 |
+| `***`    | teacher                             | view my student's student information                                         | know how I can student them if there are any issues        |
+| `***`    | teacher                             | view the submission deadlines                                                 | know when to remind my students                            |
+| `***`    | forgetful teacher                   | be reminded on deadlines due in 2 days                                        | prioritize which assignments to mark                       |
+| `***`    | teacher                             | sort an assignment by score                                                   | see the best and worst performers                          |
+| `**`     | teacher                             | link scanned PDF files (URL) to a student                                     | keep track of previous assignments for each student        |
+| `**`     | teacher                             | view all the files (or just file names) submitted by the student before       | not waste time finding them somewhere else                 |
+| `**`     | teacher who wants to improve grades | create a priority list of students who need the most attention                | allocate my time effectively                               |
+| `*`      | teacher                             | view a student's attendance history                                           | mark their attendance scores throughout the whole semester |
+| `*`      | teacher                             | mark attendance and manage participation marks for different students in real time | not need to update from paper every time                   |
+
+*{More to be added}*
+
+### Use cases
+
+(For all use cases below, the **System** is the `TAchy` and the **Actor** is the `tuition teacher`,
+unless specified otherwise)
+
+**Use case: Add a student**
+
+**MSS**
+
+1. Teacher requests to add a student
+2. TAchy adds the student to the student list
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. The student name is invalid.
+    * 1a1. TAchy shows an error message.
+
+      Use case ends.
+
+* 1b. The student information already exists.
+    * 1b1. TAchy an error message of duplicate student.
+    * 1b2. Teacher adds the student again by providing a different tag.
+
+      Use case resumes at step 2.
+
+---
+
+**Use case: Delete a student**
+
+**MSS**
+
+1. Teacher requests to list the students
+2. Teacher requests to delete a student by index
+3TAchy deletes the student from the student list
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. There is no students in the app.
+    * 1a1. TAchy displays a &quot;no students&quot; message.
+
+      Use case ends.
+
+* 2a. The student index is invalid.
+    * 2a1. TAchy shows an error message.
+
+      Use case ends.
+
+---
+
+**Use case: List students**
+
+**MSS**
+
+1. Teacher requests to list students.
+2. TAchy displays the list of students in the current class.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. There is no students in the app.
+    * 1a1. TAchy displays a &quot;no students&quot; message.
+
+      Use case ends.
+
+---
+
+**Use case: Find a student**
+
+**MSS**
+
+1. Teacher requests to search for a student by name.
+2. TAchy displays the student(s) matching the search query.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. No student matches the query.
+    * 1a1. TAchy displays a &quot;no students found&quot; message.
+
+      Use case ends.
+
+---
+
+**Use case: Add assignment**
+
+**MSS**
+
+1. Teacher requests to add an assignment to a student by index.
+2. TAchy adds the assignment to the student's assignment list.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The student index is invalid.
+    * 1a1. TAchy shows an error message.
+
+      Use case ends.
+
+* 1b. The assignment name is invalid.
+    * 1b1. TAchy shows an error message.
+
+      Use case ends.
+
+* 1c. The assignment already exists under the student.
+    * 1c1. TAchy shows a warning message.
+
+      Use case ends.
+
+---
+
+**Use case: Delete assignment**
+
+**MSS**
+
+1. Teacher requests to delete an assignment for a student by index.
+2. TAchy removes the assignment from the student's assignment list.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The student index is invalid.
+    * 1a1. TAchy shows an error message.
+
+      Use case ends.
+
+* 1b. The assignment index is invalid.
+    * 1b1. TAchy shows an error message.
+
+      Use case ends.
+
+---
+
+**Use case: Edit assignment**
+
+**MSS**
+
+1. Teacher requests to edit an assignment for a student by index.
+2. TAchy modifies the assignment detail in the student's assignment list.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The student index is invalid.
+    * 1a1. TAchy shows an error message.
+
+      Use case ends.
+
+* 1b. The assignment index is invalid.
+    * 1b1. TAchy shows an error message.
+
+      Use case ends.
+
+---
+
+
+**Use case: Mark assignment**
+
+**MSS**
+
+1. Teacher requests to mark a assignment as submitted for a student by index.
+2. TAchy modifies the assignment submission status in the student's assignment list.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The student index is invalid.
+    * 1a1. TAchy shows an error message.
+
+      Use case ends.
+
+* 1b. The assignment index is invalid.
+    * 1b1. TAchy shows an error message.
+
+      Use case ends.
+
+---
+
+
+**Use case: Unmark assignment**
+
+**MSS**
+
+1. Teacher requests to mark a assignment as not submitted for a student by index.
+2. TAchy modifies the assignment submission status in the student's assignment list.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The student index is invalid.
+    * 1a1. TAchy shows an error message.
+
+      Use case ends.
+
+* 1b. The assignment index is invalid.
+    * 1b1. TAchy shows an error message.
+
+      Use case ends.
+
+---
+
+**Use case: Grade assignment**
+
+**MSS**
+
+1. Teacher requests to add a grade for a student’s assignment by index.
+2. TAchy records the grade for the student’s assignment.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The student index is invalid.
+    * 1a1. TAchy shows an error message.
+
+      Use case ends.
+
+* 1b. The assignment index is invalid.
+    * 1b1. TAchy shows an error message.
+
+      Use case ends.
+
+* 1c. The grade is invalid.
+    * 1c1. TAchy shows an error message.
+
+      Use case ends.
+
+* 1d. The student has already been graded for the assignment.
+    * 1d1. TAchy shows a warning message.
+    * 1d2. TAchy asks if the Teacher wants to overwrite the grade.
+    * 1d3. Teacher confirms the overwrite.
+    * 1d4. TAchy records the new grade.
+
+      Use case resumes at step 2.
+
+---
+
+**Use case: Sort students by an assignment score**
+
+**MSS**
+
+1. Teacher requests to sort students by the score of an assignment.
+2. TAchy sorts the assignment results by score in ascending or descending order.
+
+   Use case ends.
+
+**Extensions**
+* 1a. The assignment does not exist.
+    * 1a1. TAchy shows an error message.
+
+      Use case ends.
+* 1b. The assignment has not been graded for all students.
+    * 1b1. TAchy shows a warning message.
+    * 1b2. TAchy asks if the Teacher wants to proceed.
+    * 1b3. Teacher confirms the action.
+
+      Use case resumes at step 2.
+* 1c. The assignment has not been graded for any student.
+    * 1c1. TAchy shows an error message.
+
+      Use case ends.
+
+---
+
+**Use case: Link scanned PDF to a student**
+
+**MSS**
+
+1. Teacher requests to list all documents stored in a file directory.
+2. TAchy displays the list of documents.
+3. Teacher requests to link a document to a student by index by name.
+4. TAchy records the link.
+
+   Use case ends.
+
+**Extensions**
+* 1a. No documents found in the directory.
+    * 1a1. TAchy displays a &quot;no documents found&quot; message.
+
+      Use case ends.
+* 3a. The student name is not in the list.
+    * 3a1. TAchy displays a &quot;no students found&quot; message.
+
+      Use case ends.
+* 3b. There are multiple students with the name.
+    * 3b1. TAchy shows a list of students with the same name with indices.
+    * 3b2. Teacher links the document to one of them by index.
+
+      Use case resumes at step 4.
+
+---
+
+**Use case: Create student priority list**
+
+**MSS**
+
+1. Teacher requests to list students
+2. Teacher requests to create a list of students who need the most attention by indices.
+3. TAchy generates a list of selected students.
+
+   Use case ends.
+
+**Extensions**
+
+* 2a. The student index is invalid.
+    * 2a1. TAchy shows an error message.
+
+      Use case ends.
+
+---
+
+**Use case: Add remark for individual student**
+
+**MSS**
+
+1. Teacher requests to add a remark for a student by index.
+2. TAchy records the remark in the student’s profile.
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The student index is invalid.
+    * 1a1. TAchy shows an error message.
+
+      Use case ends.
+
+* 1b. The student already has a remark.
+    * 1b1. TAchy shows a warning message.
+    * 1b2. TAchy asks if the Teacher wants to overwrite the remark.
+    * 1b3. Teacher confirms the overwrite.
+    * 1b4. TAchy records the new remark.
+
+      Use case resumes at step 2.
+
+*{More to be added}*
+
+### Non-Functional Requirements
+
+1.  Should work on any _mainstream OS_ as long as it has Java `17` or above installed.
+2.  Should be able to hold up to 1000 students without a noticeable sluggishness in performance for typical usage.
+3.  A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most of the tasks faster using commands than using the mouse.
+
+- Business/domain rules: Each student must be uniquely identifiable by their student ID, Assignments must have deadlines that  cannot be set on a date that has passed, Each class should not exceed 50 students, Assignments must be submitted by students up to the deadline set by the Teacher
+- Constraints: The system must be backward compatible with data produced by earlier versions of the system, The total project cost should be $0, The project is offered as a free service, TAs are only allowed to store up to 5 GB of data
+- Technical requirements: The system should work on both 32-bit and 64-bit environment, The system should be compatible with Windows, macOS and Linux operating systems.
+- Performance requirements: The system should respond to user inputs within five seconds, The system should be able to handle a large number of students, classes, and assignments without degradation in performance, Data retrieval should not take longer than 2 seconds.
+- Quality requirements: The system should be usable by a novice who has never used AB3 before, The system should have clear user documentation to guide users through its features, Intuitive error messages will be displayed to the user so that they know what is the correct method of using the system
+- Process requirements: The project is expected to adhere to the milestones which are added every week
+- Notes about project scope: The system is not required to integrate with third-party systems (e.g. Canvas), The system is not required to generate or print detailed reports of class performance or assignment scores, The system will only support English as the user interface language, The system will not be deployed on the cloud and will only run locally
+- Any other noteworthy points: The system must ensure data privary by adhering to relevant data protection regulations, The system should not use any langauge or imagery that may be offensive to students or faculty members from different cultural backgrounds.
+
+### Glossary
+
+* **Mainstream OS**: Windows, Linux, Unix, MacOS
+* **Private student detail**: A student detail that is not meant to be shared with others
+* **Teacher** : Abbreviation of Teaching Assistant, a student responsible for assisting instructors in managing courses
+* **Class**: A group of students taking the same course assigned to a specific tutorial, sectional, laboratory or recitation which a Teacher is responsible for.
+
+--------------------------------------------------------------------------------------------------------------------
+
+## **Appendix: Instructions for manual testing**
+
+Given below are instructions to test the app manually.
+
+<div class="alert box-container seamless" data-v-474166ec><!----> <div class="header-and-body" data-v-474166ec><!----> <div class="box-body-wrapper" data-v-474166ec><div class="icon-wrapper  text-info" data-v-474166ec><i class="fas fa-info" data-v-474166ec></i></div> <div aria-hidden="true" class="vertical-divider alert-info" data-v-474166ec></div> <div class="contents" data-v-474166ec>
+
+**Note:** These instructions only provide a starting point for testers to work on;
+testers are expected to do more *exploratory* testing.
+
+</div> <!----></div></div></div>
+
+### Launch and shutdown
+
+1. Initial launch
+
+   1. Download the jar file and copy into an empty folder
+
+   1. Double-click the jar file Expected: Shows the GUI with a set of sample contacts. The window size may not be optimum.
+
+1. Saving window preferences
+
+   1. Resize the window to an optimum size. Move the window to a different location. Close the window.
+
+   1. Re-launch the app by double-clicking the jar file.<br>
+       Expected: The most recent window size and location is retained.
+
+1. _{ more test cases …​ }_
+
+### Deleting a student
+
+1. Deleting a student while all students are being shown
+
+   1. Prerequisites: List all students using the `list` command. Multiple students in the list.
+
+   1. Test case: `delete 1`<br>
+      Expected: First student is deleted from the list. Details of the deleted student shown in the status message. Timestamp in the status bar is updated.
+
+   1. Test case: `delete 0`<br>
+      Expected: No student is deleted. Error details shown in the status message. Status bar remains the same.
+
+   1. Other incorrect delete commands to try: `delete`, `delete x`, `...` (where x is larger than the list size)<br>
+      Expected: Similar to previous.
+
+1. _{ more test cases …​ }_
+
+### Saving data
+
+1. Dealing with missing/corrupted data files
+
+   1. _{explain how to simulate a missing/corrupted file, and the expected behavior}_
+
+1. _{ more test cases …​ }_
+
+  </div> <nav id="page-nav" data-v-e6005420><div class="nav-component slim-scroll" data-v-e6005420><nav id="mb-page-nav" class="nav nav-pills flex-column my-0 small no-flex-wrap" data-v-e6005420><a class="nav-link py-1" href="#tachy-developer-guide" data-v-e6005420>TAchy Developer Guide‎</a> <nav class="nav nav-pills flex-column my-0 nested no-flex-wrap" data-v-e6005420><a class="nav-link py-1" href="#acknowledgements" data-v-e6005420>Acknowledgements‎</a> <a class="nav-link py-1" href="#setting-up-getting-started" data-v-e6005420>Setting up, getting started‎</a> <a class="nav-link py-1" href="#design" data-v-e6005420>Design‎</a> <nav class="nav nav-pills flex-column my-0 nested no-flex-wrap" data-v-e6005420><a class="nav-link py-1" href="#architecture" data-v-e6005420>Architecture‎</a> <a class="nav-link py-1" href="#ui-component" data-v-e6005420>UI component‎</a> <a class="nav-link py-1" href="#logic-component" data-v-e6005420>Logic component‎</a> <a class="nav-link py-1" href="#model-component" data-v-e6005420>Model component‎</a> <a class="nav-link py-1" href="#storage-component" data-v-e6005420>Storage component‎</a> <a class="nav-link py-1" href="#common-classes" data-v-e6005420>Common classes‎</a></nav> <a class="nav-link py-1" href="#implementation" data-v-e6005420>Implementation‎</a> <nav class="nav nav-pills flex-column my-0 nested no-flex-wrap" data-v-e6005420><a class="nav-link py-1" href="#introduction" data-v-e6005420>Introduction‎</a> <a class="nav-link py-1" href="#features-overview" data-v-e6005420>Features Overview‎</a></nav> <a class="nav-link py-1" href="#adding-a-new-assignment" data-v-e6005420>Adding a new Assignment‎</a> <a class="nav-link py-1" href="#viewing-a-student-s-details" data-v-e6005420>Viewing a student's details‎</a> <a class="nav-link py-1" href="#adding-a-remark-to-a-student" data-v-e6005420>Adding a remark to a student‎</a></nav> <!----></nav></div> <!----></nav> <div aria-hidden="true" class="scroll-top-button fa-lg d-print-none" style="display:none;bottom:2%;right:2%;position:fixed;"><i class="fas fa-arrow-circle-up"></i></div></div> <footer><div class="text-center"><small>[<span><strong>Powered by</strong></span> <img src="https://markbind.org/favicon.ico" width="30"> <a href="https://markbind.org/">MarkBind 5.5.3</a>, generated on Fri, 25 Oct 2024, 2:14:39 GMT+8]</small></div></footer></div>
 </body><script src="/tp/markbind/js/bootstrap-utility.min.js"></script>
 <script src="/tp/markbind/js/polyfill.min.js"></script>
 <script src="/tp/markbind/js/vue.min.js"></script>

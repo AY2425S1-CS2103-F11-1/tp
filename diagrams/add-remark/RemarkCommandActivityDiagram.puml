@@ -1,0 +1,42 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+
+start
+:User requests to add remark for a student;
+:Parser handles user's input;
+if () then ([Remark prefix is present])
+  :Parser extracts student index;
+  if () then ([A non-zero unsigned index is used])
+    :Parser extracts remark;
+    if () then ([Remark is not empty])
+      :RemarkCommand handles index and remark;
+      if () then ([index is out of range])
+        :Show error message of index out of range;
+        stop
+      else ([index is in range])
+        :RemarkCommand adds remark;
+        if () then ([Remark is empty])
+            :Show error message of empty remark;
+            stop
+        else ([Remark is not empty])
+            :Update student with the new remark;
+            :Update the student's list;
+            :Show success message;
+            stop
+      endif
+    else ([Remark is empty])
+      :Show error message of empty remark;
+      stop
+    endif
+  else ([Invalid index])
+    :Show error message of invalid index;
+    stop
+  endif
+else ([Remark prefix is missing])
+    :Show error message and example message usage;
+    stop
+endif
+
+stop
+
+@enduml
