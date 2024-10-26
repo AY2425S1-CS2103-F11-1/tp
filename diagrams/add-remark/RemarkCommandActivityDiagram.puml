@@ -23,6 +23,7 @@ if () then ([Remark prefix is present])
             :Update the student's list;
             :Show success message;
             stop
+        endif
       endif
     else ([Remark is empty])
       :Show error message of empty remark;
@@ -36,7 +37,5 @@ else ([Remark prefix is missing])
     :Show error message and example message usage;
     stop
 endif
-
-stop
 
 @enduml
