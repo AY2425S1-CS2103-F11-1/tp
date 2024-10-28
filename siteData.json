@@ -103,6 +103,7 @@
         "features": "Features",
         "viewing-help-help": "Viewing help : help",
         "adding-a-student-add-student": "Adding a student: add_student",
+        "viewing-a-student-view-student": "Viewing a student: view_student",
         "listing-all-students-list": "Listing all students : list",
         "editing-a-student-edit": "Editing a student : edit",
         "locating-students-by-name-find": "Locating students by name: find",
