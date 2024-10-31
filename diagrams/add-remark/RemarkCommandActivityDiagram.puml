@@ -15,10 +15,10 @@ if () then ([Remark prefix is present])
         stop
       else ([index is in range])
         :RemarkCommand adds remark;
-        if () then ([Remark is empty])
-            :Show error message of empty remark;
+        if () then ([Remark is invalid])
+            :Show error message of invalid remark;
             stop
-        else ([Remark is not empty])
+        else ([Remark is valid])
             :Update student with the new remark;
             :Update the student's list;
             :Show success message;
