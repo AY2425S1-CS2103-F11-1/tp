@@ -123,6 +123,7 @@
         "deleting-a-student-delete-student": "Deleting a student : delete_student",
         "adding-an-assignment-add-assignment": "Adding an assignment: add_assignment",
         "deleting-an-assignment-delete-assignment": "Deleting an assignment: delete_assignment",
+        "editing-an-assignment-edit-assignment": "Editing an assignment: edit_assignment",
         "marking-an-assignment-as-submitted-mark": "Marking an assignment as submitted: mark",
         "unmarking-an-assignment-unmark": "Unmarking an assignment: unmark",
         "grading-an-assignment-grade": "Grading an assignment: grade",
