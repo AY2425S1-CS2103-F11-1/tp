@@ -27,7 +27,7 @@ if () then ([prefixes present])
         endif
       endif
     else ([else])
-      :Show error message of invalid index;
+      :Show error message;
       stop
     endif
   else ([else])
