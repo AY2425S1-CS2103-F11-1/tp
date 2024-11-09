@@ -61,11 +61,21 @@
         "product-scope": "Product scope",
         "user-stories": "User stories",
         "use-cases": "Use cases",
+        "planned-enhancements": "Planned Enhancements:",
         "non-functional-requirements": "Non-Functional Requirements",
         "glossary": "Glossary",
         "appendix-instructions-for-manual-testing": "Appendix: Instructions for manual testing",
         "launch-and-shutdown": "Launch and shutdown",
-        "deleting-a-student": "Deleting a student"
+        "adding-a-student": "Adding a student",
+        "viewing-a-student": "Viewing a student",
+        "deleting-a-student": "Deleting a student",
+        "editing-a-student": "Editing a student",
+        "finding-students-by-name": "Finding students by name",
+        "adding-an-assignment": "Adding an assignment",
+        "marking-and-unmarking-an-assignment": "Marking and unmarking an assignment",
+        "grading-an-assignment": "Grading an assignment",
+        "clearing-all-data": "Clearing all data",
+        "viewing-help": "Viewing help"
       },
       "headingKeywords": {}
     },
